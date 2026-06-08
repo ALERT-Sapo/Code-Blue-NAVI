@@ -843,12 +843,27 @@ function renderLog(){
   el.scrollTop=el.scrollHeight;
 }
 function copyLog(){
-  var lines=['CODE BLUE NAVI — EVENT LOG','=========================='];
-  if(codeStart)lines.push('Start: '+new Date(codeStart).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}));
-  lines.push('Duration: '+fmt(codeElapsed())+' | Shocks: '+shockCount+' | Epi doses: '+epiDoses);
-  lines.push('');lines.push('★ = GWTG-required measure');lines.push('');
-  lines.push('ELAPSED   WALL       EVENT');lines.push('-------   --------   -----');
-  events.filter(function(e){return !isFiltered(e);}).forEach(function(e){lines.push(e.elapsed+'   '+e.wall+'   '+(e.gwtg?'★ ':'')+e.text+' ['+e.tag+']');});
+  var sep='══════════════════════════════════════';
+  var div='──────────────────────────────────────';
+  var lines=[
+    'CODE BLUE NAVI — EVENT LOG',
+    sep,
+    'Start:    '+(codeStart?new Date(codeStart).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—'),
+    'Date:     '+(codeStart?new Date(codeStart).toLocaleDateString([],{month:'2-digit',day:'2-digit',year:'numeric'}):'—'),
+    'Duration: '+fmt(codeElapsed()),
+    'Shocks:   '+shockCount+'   |   Epi doses: '+epiDoses,
+    sep,
+    '★ = GWTG-required measure',
+    div,
+    '  ELAPSED   WALL TIME    EVENT',
+    div
+  ];
+  events.filter(function(e){return !isFiltered(e);}).forEach(function(e){
+    var star=e.gwtg?'★ ':'  ';
+    lines.push(star+e.elapsed+'   '+e.wall+'   '+e.text);
+  });
+  lines.push(div);
+  lines.push('END OF LOG — Code Blue Navi | UCI Health ALERT');
   var text=lines.join('\n');
   if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){alert('Copied to clipboard');});}
   else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Copied');}
