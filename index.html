@@ -697,7 +697,7 @@ function enterCheckMode(){
   document.getElementById('cprSubTxt').setAttribute('fill','#ff3355');document.getElementById('cprSubTxt').textContent='ongoing';
   document.getElementById('prechargeLabel').style.display='none';
   document.getElementById('checkLabel').style.display='flex';document.getElementById('cprStatusText').style.display='none';
-  addEvent('Pulse/Rhythm check','cpr');vibrateLong();
+  addEvent('Pulse/Rhythm check','cpr');vibrateLong();toneRhythmCheck();
 }
 function tickCPR(){
   if(!cprCycleStart||cprState!=='active')return;
@@ -715,7 +715,7 @@ function tickCPR(){
           document.getElementById('cprStatusText').style.display='none';
           var ring=document.getElementById('cprRing');
           ring.setAttribute('stroke','#ffe600');ring.style.filter='drop-shadow(0 0 6px #ffe600)';
-          document.getElementById('cprBig').setAttribute('fill','#ffe600');vibrateLong();
+          document.getElementById('cprBig').setAttribute('fill','#ffe600');vibrateLong();tonePrecharge();
         }
       } else {
         if(prechargeShown){prechargeShown=false;}
@@ -739,8 +739,8 @@ function tickPause(){
   document.getElementById('pauseBarFill').style.width=Math.min(s/15*100,100)+'%';
   document.getElementById('pauseBarLabel').textContent='Pause: '+s+'s';
   if(s<8){document.getElementById('pauseBarFill').style.background='var(--cyan-border)';document.getElementById('cprBtn').className='btn btn-pause-warn cpr-main-btn';document.getElementById('cprBtnText').textContent='CPR Paused — Tap to Resume';}
-  else if(s===8){vibrateShort();}
-  else if(s===10){document.getElementById('pauseBarFill').style.background='#ff8800';document.getElementById('cprBtn').className='btn btn-pause-danger cpr-main-btn';document.getElementById('cprBtnText').textContent='⚠ 10s PAUSE — Resume CPR';vibrateLong();}
+  else if(s===8){vibrateShort();tonePauseEight();}
+  else if(s===10){document.getElementById('pauseBarFill').style.background='#ff8800';document.getElementById('cprBtn').className='btn btn-pause-danger cpr-main-btn';document.getElementById('cprBtnText').textContent='⚠ 10s PAUSE — Resume CPR';vibrateLong();tonePauseTen();}
   else{document.getElementById('pauseBarFill').style.background='#ff3355';document.getElementById('cprBtn').className='btn btn-pause-danger cpr-main-btn';document.getElementById('cprBtnText').textContent='⚠ '+s+'s — Resume NOW';}
 }
 function giveEpi(){
@@ -756,8 +756,8 @@ function tickEpi(){
   var tile=document.getElementById('epiTile');
   document.getElementById('tileEpiTime').textContent=fmt(elapsed);
   if(elapsed<180){tile.className='tile tile-epi';document.getElementById('tileEpiSub').textContent='Next in '+fmt(180-elapsed);}
-  else if(elapsed<300){tile.className='tile tile-epi warn';document.getElementById('tileEpiSub').textContent='Due — give now';if(!epiAlerted3){epiAlerted3=true;vibrate();}}
-  else{tile.className='tile tile-epi danger';document.getElementById('tileEpiSub').textContent='>5 min!';if(!epiAlerted5){epiAlerted5=true;vibrate();}}
+  else if(elapsed<300){tile.className='tile tile-epi warn';document.getElementById('tileEpiSub').textContent='Due — give now';if(!epiAlerted3){epiAlerted3=true;vibrate();toneEpiDue();}}
+  else{tile.className='tile tile-epi danger';document.getElementById('tileEpiSub').textContent='>5 min!';if(!epiAlerted5){epiAlerted5=true;vibrate();toneEpiLate();}}
 }
 function deliverShock(){
   if(!codeActive||codeEnded)return;
@@ -862,6 +862,17 @@ function switchTab(name,el){
 function vibrate(pattern){if(navigator.vibrate)navigator.vibrate(pattern||[200,100,200]);}
 function vibrateShort(){if(navigator.vibrate)navigator.vibrate([100]);}
 function vibrateLong(){if(navigator.vibrate)navigator.vibrate([300,100,300,100,300]);}
+var audioCtx=null;
+function getAudioCtx(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(audioCtx&&audioCtx.state==='suspended'){audioCtx.resume();}return audioCtx;}
+document.addEventListener('touchstart',function unlockAudio(){getAudioCtx();},{once:true});
+function playTone(freq,dur,type,vol){var ctx=getAudioCtx();if(!ctx)return;try{var o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type=type||'sine';o.frequency.setValueAtTime(freq,ctx.currentTime);g.gain.setValueAtTime(vol||0.4,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);o.start(ctx.currentTime);o.stop(ctx.currentTime+dur);}catch(e){}}
+function playSeq(tones){tones.forEach(function(t){setTimeout(function(){playTone(t.f,t.d,t.t,t.v);},t.ms||0);});}
+function tonePrecharge(){playSeq([{f:880,d:.25,t:'sine',v:.5,ms:0},{f:1100,d:.35,t:'sine',v:.6,ms:300}]);}
+function toneRhythmCheck(){playSeq([{f:1200,d:.2,t:'square',v:.4,ms:0},{f:1000,d:.2,t:'square',v:.4,ms:250},{f:800,d:.3,t:'square',v:.5,ms:500}]);}
+function tonePauseEight(){playTone(600,.15,'sine',.3);}
+function tonePauseTen(){playSeq([{f:900,d:.15,t:'square',v:.5,ms:0},{f:900,d:.15,t:'square',v:.5,ms:200},{f:900,d:.25,t:'square',v:.6,ms:400}]);}
+function toneEpiDue(){playSeq([{f:660,d:.2,t:'sine',v:.45,ms:0},{f:880,d:.3,t:'sine',v:.5,ms:250}]);}
+function toneEpiLate(){playSeq([{f:440,d:.15,t:'sawtooth',v:.45,ms:0},{f:440,d:.15,t:'sawtooth',v:.45,ms:180},{f:550,d:.25,t:'sawtooth',v:.55,ms:360}]);}
 </script>
 </body>
 </html>
