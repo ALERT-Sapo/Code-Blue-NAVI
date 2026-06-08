@@ -98,5 +98,4 @@ Cristian Rosa — RN, MSN, CCRN
 UCI Health ALERT Team
 Clinical Nursing Leadership | Resuscitation QI
 
-License
-MIT License — see LICENSE for details.
+2026 Cristian Rosa. All rights reserved.
