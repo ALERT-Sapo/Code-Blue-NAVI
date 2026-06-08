@@ -697,7 +697,7 @@ function enterCheckMode(){
   document.getElementById('cprSubTxt').setAttribute('fill','#ff3355');document.getElementById('cprSubTxt').textContent='ongoing';
   document.getElementById('prechargeLabel').style.display='none';
   document.getElementById('checkLabel').style.display='flex';document.getElementById('cprStatusText').style.display='none';
-  addEvent('Pulse/Rhythm check','cpr');vibrate();
+  addEvent('Pulse/Rhythm check','cpr');vibrateLong();
 }
 function tickCPR(){
   if(!cprCycleStart||cprState!=='active')return;
@@ -715,7 +715,7 @@ function tickCPR(){
           document.getElementById('cprStatusText').style.display='none';
           var ring=document.getElementById('cprRing');
           ring.setAttribute('stroke','#ffe600');ring.style.filter='drop-shadow(0 0 6px #ffe600)';
-          document.getElementById('cprBig').setAttribute('fill','#ffe600');vibrate();
+          document.getElementById('cprBig').setAttribute('fill','#ffe600');vibrateLong();
         }
       } else {
         if(prechargeShown){prechargeShown=false;}
@@ -738,8 +738,9 @@ function tickPause(){
   var s=Math.floor((now()-cprPauseStart)/1000);
   document.getElementById('pauseBarFill').style.width=Math.min(s/15*100,100)+'%';
   document.getElementById('pauseBarLabel').textContent='Pause: '+s+'s';
-  if(s<10){document.getElementById('pauseBarFill').style.background='var(--cyan-border)';document.getElementById('cprBtn').className='btn btn-pause-warn cpr-main-btn';document.getElementById('cprBtnText').textContent='CPR Paused — Tap to Resume';}
-  else if(s===10){document.getElementById('pauseBarFill').style.background='#ff8800';document.getElementById('cprBtn').className='btn btn-pause-danger cpr-main-btn';document.getElementById('cprBtnText').textContent='⚠ 10s PAUSE — Resume CPR';vibrate();}
+  if(s<8){document.getElementById('pauseBarFill').style.background='var(--cyan-border)';document.getElementById('cprBtn').className='btn btn-pause-warn cpr-main-btn';document.getElementById('cprBtnText').textContent='CPR Paused — Tap to Resume';}
+  else if(s===8){vibrateShort();}
+  else if(s===10){document.getElementById('pauseBarFill').style.background='#ff8800';document.getElementById('cprBtn').className='btn btn-pause-danger cpr-main-btn';document.getElementById('cprBtnText').textContent='⚠ 10s PAUSE — Resume CPR';vibrateLong();}
   else{document.getElementById('pauseBarFill').style.background='#ff3355';document.getElementById('cprBtn').className='btn btn-pause-danger cpr-main-btn';document.getElementById('cprBtnText').textContent='⚠ '+s+'s — Resume NOW';}
 }
 function giveEpi(){
@@ -858,7 +859,9 @@ function switchTab(name,el){
   page.style.display=(name==='log')?'flex':'block';
   el.classList.add('active');
 }
-function vibrate(){if(navigator.vibrate)navigator.vibrate([200,100,200]);}
+function vibrate(pattern){if(navigator.vibrate)navigator.vibrate(pattern||[200,100,200]);}
+function vibrateShort(){if(navigator.vibrate)navigator.vibrate([100]);}
+function vibrateLong(){if(navigator.vibrate)navigator.vibrate([300,100,300,100,300]);}
 </script>
 </body>
 </html>
