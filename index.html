@@ -611,6 +611,7 @@ function now(){return Date.now();}
 function codeElapsed(){return codeStart?Math.floor((now()-codeStart)/1000):0;}
 
 function startCode(){
+  unlockAudio();
   codeActive=true;codeStart=now();
   document.getElementById('startOverlay').style.display='none';
   document.getElementById('wallTime').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
@@ -635,6 +636,7 @@ function confirmEndCode(){
   switchTab('log',document.querySelectorAll('.tab')[2]);
 }
 function handleCPR(){
+  unlockAudio();
   if(!codeActive||codeEnded)return;
   if(cprState==='idle'){startCPRCycle(true);}
   else if(cprState==='active'){pauseCPR();}
@@ -863,9 +865,27 @@ function vibrate(pattern){if(navigator.vibrate)navigator.vibrate(pattern||[200,1
 function vibrateShort(){if(navigator.vibrate)navigator.vibrate([100]);}
 function vibrateLong(){if(navigator.vibrate)navigator.vibrate([300,100,300,100,300]);}
 var audioCtx=null;
-function getAudioCtx(){if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(audioCtx&&audioCtx.state==='suspended'){audioCtx.resume();}return audioCtx;}
-document.addEventListener('touchstart',function unlockAudio(){getAudioCtx();},{once:true});
+function getAudioCtx(){
+  if(!audioCtx){
+    try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
+  }
+  if(audioCtx&&audioCtx.state==='suspended'){audioCtx.resume();}
+  return audioCtx;
+}
+function unlockAudio(){
+  if(!audioCtx){
+    try{
+      audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+      // Play a silent buffer to fully unlock on iOS
+      var buf=audioCtx.createBuffer(1,1,22050);
+      var src=audioCtx.createBufferSource();
+      src.buffer=buf;src.connect(audioCtx.destination);src.start(0);
+    }catch(e){}
+  }
+  if(audioCtx&&audioCtx.state==='suspended'){audioCtx.resume();}
+}
 function playTone(freq,dur,type,vol){var ctx=getAudioCtx();if(!ctx)return;try{var o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type=type||'sine';o.frequency.setValueAtTime(freq,ctx.currentTime);g.gain.setValueAtTime(vol||0.4,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);o.start(ctx.currentTime);o.stop(ctx.currentTime+dur);}catch(e){}}
+function getAudioCtx(){unlockAudio();return audioCtx;}
 function playSeq(tones){tones.forEach(function(t){setTimeout(function(){playTone(t.f,t.d,t.t,t.v);},t.ms||0);});}
 function tonePrecharge(){playSeq([{f:880,d:.25,t:'sine',v:.5,ms:0},{f:1100,d:.35,t:'sine',v:.6,ms:300}]);}
 function toneRhythmCheck(){playSeq([{f:1200,d:.2,t:'square',v:.4,ms:0},{f:1000,d:.2,t:'square',v:.4,ms:250},{f:800,d:.3,t:'square',v:.5,ms:500}]);}
