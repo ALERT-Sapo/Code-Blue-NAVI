@@ -79,7 +79,7 @@ This is a single-file HTML application. To deploy:
 
 Place index.html in the root of this repository
 Enable GitHub Pages: Settings → Pages → Deploy from branch → main → / (root)
-The app will be live at https://your-username.github.io/code-blue-navi
+The app will be live at https://alert-sapo.github.io/Code-Blue-NAVI/
 
 No build process, no dependencies, no server required.
 
