@@ -2,7 +2,7 @@
   "name": "Code Blue Navi",
   "short_name": "CBN",
   "description": "Real-time resuscitation timing and documentation — UCI Health ALERT",
-  "start_url": "/",
+  "start_url": "/Code-Blue-NAVI/"
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#080c10",
