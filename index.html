@@ -7,6 +7,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Code Blue Navi">
 <meta name="theme-color" content="#080c10">
+<link rel="manifest" href="manifest.json">
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(e){console.log('SW error:',e);});
+  });
+}
+</script>
 <title>Code Blue Navi</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
