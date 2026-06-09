@@ -1,0 +1,87 @@
+# Code Blue Navi — Installation Guide
+### UCI Health ALERT Team
+
+---
+
+## What is it?
+Code Blue Navi is a resuscitation timing and documentation tool designed specifically for our team. It runs on your phone like an app but installs directly from your browser — no App Store required.
+
+---
+
+## iPhone Instructions
+
+> ⚠️ **You must use Safari.** It will not work correctly from Chrome or other browsers on iPhone.
+
+**Step 1** — Open Safari and go to:
+```
+[YOUR GITHUB PAGES URL HERE]
+```
+
+**Step 2** — Tap the **Share button** at the bottom of the screen
+*(the box with an arrow pointing up)*
+
+**Step 3** — Scroll down and tap **"Add to Home Screen"**
+
+**Step 4** — The name should say **Code Blue Navi** — tap **Add** in the top right
+
+**Step 5** — Go to your home screen and find the Code Blue Navi icon
+
+**Step 6** — Before your first use, tap the icon to open it, then tap **START CODE** once to unlock audio, then tap **Reset All** to clear it. This activates the sound alerts.
+
+✅ The app will now work **without internet** after this first load.
+
+---
+
+## Android Instructions
+
+**Step 1** — Open **Chrome** and go to:
+```
+[YOUR GITHUB PAGES URL HERE]
+```
+
+**Step 2** — Tap the **three-dot menu** in the top right corner
+
+**Step 3** — Tap **"Add to Home Screen"** or **"Install App"**
+*(wording varies by phone model)*
+
+**Step 4** — Tap **Add**
+
+**Step 5** — Find the Code Blue Navi icon in your app drawer or home screen
+
+**Step 6** — Open it once with internet to fully load, then it works offline.
+
+✅ The app will now work **without internet** after this first load.
+
+---
+
+## Sound Alerts
+
+The app plays audio tones for critical events. Make sure:
+
+- **iPhone:** Your phone does **not** need to be on silent — the app overrides the silent switch for clinical alerts
+- **Android:** Volume should be turned up; the app will vibrate as well as play tones
+
+**Tone guide:**
+| Alert | Sound |
+|-------|-------|
+| Pre-charge defibrillator (1:45) | Two rising tones |
+| Pulse/Rhythm check (2:00) | Three descending beeps |
+| CPR pause 8 seconds | Single soft tap |
+| CPR pause 10 seconds | Three urgent beeps |
+| Epinephrine due (3 min) | Two medium rising tones |
+| Epinephrine overdue (5 min) | Three buzzing tones |
+
+---
+
+## Updates
+
+When the app is updated, you may need to:
+1. Close the app completely (swipe away from app switcher)
+2. Reopen from the home screen icon
+
+If an update still doesn't appear, delete the icon and reinstall using the steps above.
+
+---
+
+## Questions?
+Contact [YOUR NAME] — UCI Health ALERT Team
