@@ -249,6 +249,9 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
               <div class="check-label-text">CHECK</div>
             </div>
             <div class="cpr-status-text" id="cprStatusText">CPR not started</div>
+            <div id="cprCounters" style="display:none;margin-top:6px;flex-direction:column;gap:3px">
+              <div style="font-size:11px;color:var(--muted)">Run <span id="cprRunDisplay" style="color:var(--cyan);font-weight:700">1</span> &nbsp;·&nbsp; Cycle <span id="cprCycleDisplay" style="color:var(--cyan);font-weight:700">1</span></div>
+            </div>
           </div>
         </div>
         <div class="pause-bar-wrap" id="pauseBarWrap">
@@ -321,15 +324,15 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
       <div class="evt-btn-label">Intubation</div>
       <div class="evt-btn-sub">Airway</div>
     </button>
+    <button class="evt-btn" onclick="openAirwayConfirm()">
+      <div class="evt-btn-icon">✅</div>
+      <div class="evt-btn-label">Airway Confirm</div>
+      <div class="evt-btn-sub">If intubated prior to CB</div>
+    </button>
     <button class="evt-btn" onclick="logEvent('Surgical airway')">
       <div class="evt-btn-icon">✂️</div>
       <div class="evt-btn-label">Surgical Airway</div>
       <div class="evt-btn-sub">Airway</div>
-    </button>
-    <button class="evt-btn" onclick="logEvent('Needle decompression')">
-      <div class="evt-btn-icon">🩹</div>
-      <div class="evt-btn-label">Needle Decomp</div>
-      <div class="evt-btn-sub">Thoracic</div>
     </button>
     <button class="evt-btn" onclick="logEvent('Chest tube placed')">
       <div class="evt-btn-icon">🔧</div>
@@ -351,10 +354,10 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
       <div class="evt-btn-label">A-line</div>
       <div class="evt-btn-sub">Access</div>
     </button>
-    <button class="evt-btn" onclick="logEvent('Fingerstick glucose')">
-      <div class="evt-btn-icon">🩸</div>
-      <div class="evt-btn-label">Fingerstick</div>
-      <div class="evt-btn-sub">Labs</div>
+    <button class="evt-btn" onclick="openECMO()">
+      <div class="evt-btn-icon">🫀</div>
+      <div class="evt-btn-label">ECMO</div>
+      <div class="evt-btn-sub">Mechanical</div>
     </button>
     <button class="evt-btn amber" onclick="openSyncCardio()">
       <div class="evt-btn-icon">⚡</div>
@@ -399,8 +402,8 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
     </div>
   </div>
   <div style="flex-shrink:0;padding:8px 16px 12px;background:var(--bg);border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px">
-    <button class="btn btn-cyan" onclick="copyLog()" style="width:100%;height:42px;font-size:13px;font-weight:700">📋 Copy Event Log</button>
-    <div id="endedBanner" style="display:none" class="ended-banner">Code ended — all timers stopped. Copy log above.</div>
+    <button class="btn btn-cyan" onclick="shareLog()" style="width:100%;height:42px;font-size:13px;font-weight:700">📤 Share / Export Log</button>
+    <div id="endedBanner" style="display:none" class="ended-banner">Code ended — all timers stopped. Edit or export log above.</div>
     <button class="btn btn-red" onclick="openEndCode()" style="width:100%;height:54px;font-size:16px;font-weight:700" id="endCodeBtn">⬛ End Code</button>
   </div>
 </div>
@@ -437,6 +440,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
       <button class="med-btn" onclick="logMedSheet(this,'Magnesium 2g')">Magnesium<span class="med-sub">2g</span><span class="badge badge-amber" style="display:none">0</span></button>
       <button class="med-btn" onclick="logMedSheet(this,'Vasopressin 40 units')">Vasopressin<span class="med-sub">40 units</span><span class="badge badge-amber" style="display:none">0</span></button>
       <button class="med-btn" onclick="logMedSheet(this,'D50 IVP')">D50<span class="med-sub">IVP</span><span class="badge badge-amber" style="display:none">0</span></button>
+      <button class="med-btn" onclick="closeMeds();setTimeout(openInsulin,200)">Insulin<span class="med-sub">units</span><span class="badge badge-amber" style="display:none">0</span></button>
       <button class="med-btn" style="background:var(--surface2);border-color:var(--border);color:var(--muted)" onclick="closeMeds();setTimeout(openCustomMed,200)">Custom<span class="med-sub">Free text</span></button>
     </div>
     <button class="sheet-close" onclick="closeMeds()">Close</button>
@@ -510,6 +514,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
       <button class="option-btn" style="color:var(--muted)" onclick="selectIntubOption(this,'confirmation pending')">Complete Later</button>
     </div>
     <button class="log-btn" onclick="submitIntubation()">Log Intubation</button>
+    <button class="log-btn" onclick="submitUnsuccessfulIntubation()" style="background:var(--red-dim);border-color:var(--red-border);color:var(--red);margin-top:8px">Log Unsuccessful Intubation</button>
     <button class="modal-close" onclick="closeIntubation()">Cancel</button>
   </div>
 </div>
@@ -595,15 +600,68 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
   </div>
 </div>
 
+<!-- ECMO -->
+<div class="modal-bg" id="ecmoModal" onclick="if(event.target===this)closeECMO()">
+  <div class="modal">
+    <h3>🫀 ECMO</h3>
+    <div class="modal-sub">Select status</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+      <button class="option-btn" onclick="selectECMOOption(this,'ECMO team activated')">ECMO Team Activated</button>
+      <button class="option-btn" onclick="selectECMOOption(this,'ECMO cannulation successful')">ECMO Cannulation Successful</button>
+      <button class="option-btn" onclick="selectECMOOption(this,'ECMO cannulation failed')" style="color:var(--red);border-color:var(--red-border)">ECMO Cannulation Failed</button>
+    </div>
+    <button class="log-btn" id="ecmoLogBtn" onclick="submitECMO()">Log ECMO</button>
+    <button class="modal-close" onclick="closeECMO()">Cancel</button>
+  </div>
+</div>
+
+<!-- AIRWAY CONFIRM -->
+<div class="modal-bg" id="airwayConfirmModal" onclick="if(event.target===this)closeAirwayConfirm()">
+  <div class="modal">
+    <h3>✅ Airway Confirmation</h3>
+    <div class="modal-sub">Pre-arrival / prior intubation — confirmation method</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+      <button class="option-btn" onclick="selectAirwayOption(this,'ETCO2 waveform capnography')">ETCO₂ Waveform Capnography</button>
+      <button class="option-btn" onclick="selectAirwayOption(this,'ETCO2 numeric')">ETCO₂ Numeric</button>
+      <button class="option-btn" onclick="selectAirwayOption(this,'ETCO2 color capnography')">ETCO₂ Color Capnography</button>
+      <button class="option-btn" style="color:var(--muted)" onclick="selectAirwayOption(this,'confirmation pending')">Complete Later</button>
+    </div>
+    <button class="log-btn" onclick="submitAirwayConfirm()">Log Airway Confirmation</button>
+    <button class="modal-close" onclick="closeAirwayConfirm()">Cancel</button>
+  </div>
+</div>
+
+<!-- INSULIN -->
+<div class="modal-bg" id="insulinModal" onclick="if(event.target===this)closeInsulin()">
+  <div class="modal"><h3>💉 Insulin</h3>
+    <div class="modal-sub">Units administered</div>
+    <input class="inp" type="number" id="insulinUnits" placeholder="e.g. 10" min="1">
+    <button class="log-btn" onclick="submitInsulin()">Log Insulin</button>
+    <button class="modal-close" onclick="closeInsulin()">Cancel</button>
+  </div>
+</div>
+
+<!-- DELETE EVENT MODAL -->
+<div class="modal-bg" id="deleteEventModal" onclick="if(event.target===this)closeDeleteEvent()">
+  <div class="modal">
+    <h3 style="color:var(--red)">Delete Event?</h3>
+    <p id="deleteEventText" style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;background:var(--surface2);padding:10px;border-radius:6px;border:1px solid var(--border)"></p>
+    <button class="btn btn-red" onclick="confirmDeleteEvent()" style="width:100%;height:48px;font-size:15px;font-weight:700;margin-bottom:8px">Delete This Entry</button>
+    <button class="modal-close" onclick="closeDeleteEvent()">Cancel</button>
+  </div>
+</div>
+
 <script>
 var codeStart=null,codeInterval=null,codeActive=false,codeEnded=false;
 var cprState='idle',cprCycleStart=null,cprPauseStart=null,cprInterval=null,pauseInterval=null,cprCheckMode=false;
-var cprRunStart=null,cprRunNumber=0,prechargeShown=false;
+var cprRunStart=null,cprRunNumber=0,cprCycleNumber=0,prechargeShown=false;
 var epiInterval=null,epiLastTime=null,epiDoses=0,epiAlerted3=false,epiAlerted5=false;
 var shockCount=0,currentJoules=200;
 var events=[];
 var roscRhythm=null,intubSelection=null,syncRhythm=null,syncJ=null,pacingRhythm=null;
+var ecmoSelection=null,airwaySelection=null;
 var initialRhythmLogged=false;
+var deleteEventIndex=null;
 
 function isGWTG(text,tag){
   if(tag==='code'&&(text.indexOf('Code started')===0||text.indexOf('Code ended')===0))return true;
@@ -653,7 +711,10 @@ function handleCPR(){
 }
 function startCPRCycle(first){
   cprState='active';cprCheckMode=false;prechargeShown=false;cprCycleStart=now();
+  cprCycleNumber++;
   if(first){cprRunNumber++;cprRunStart=now();addEvent('CPR started — run #'+cprRunNumber,'cpr');}
+  else{addEvent('CPR cycle #'+cprCycleNumber+' — run #'+cprRunNumber,'cpr');}
+  updateCPRCounterDisplay();
   var ring=document.getElementById('cprRing');
   ring.setAttribute('stroke','#00d4ff');ring.style.filter='drop-shadow(0 0 4px #00d4ff)';ring.classList.remove('ring-blink');
   document.getElementById('cprBig').setAttribute('fill','#00d4ff');
@@ -663,6 +724,12 @@ function startCPRCycle(first){
   document.getElementById('cprBtn').className='btn btn-active cpr-main-btn';
   document.getElementById('cprBtnText').textContent='⏸ CPR Active — Tap to Pause';
   clearInterval(cprInterval);cprInterval=setInterval(tickCPR,500);tickCPR();
+}
+function updateCPRCounterDisplay(){
+  var c=document.getElementById('cprCounters');
+  var r=document.getElementById('cprRunDisplay');
+  var cy=document.getElementById('cprCycleDisplay');
+  if(c&&r&&cy){c.style.display='flex';r.textContent=cprRunNumber;cy.textContent=cprCycleNumber;}
 }
 function pauseCPR(){
   cprState='paused';cprPauseStart=now();clearInterval(cprInterval);
@@ -687,6 +754,7 @@ function stopCPRForROSC(){
   clearInterval(cprInterval);clearInterval(pauseInterval);
   cprState='idle';cprCycleStart=null;cprPauseStart=null;cprCheckMode=false;
   var runDur=cprRunStart?fmt(Math.floor((now()-cprRunStart)/1000)):'unknown';
+  cprCycleNumber=0;
   document.getElementById('cprBtn').className='btn btn-cyan cpr-main-btn';
   document.getElementById('cprBtnText').textContent='▶ Start CPR';
   document.getElementById('cprStatusText').textContent='ROSC achieved';
@@ -809,6 +877,74 @@ function openIntubation(){intubSelection=null;document.querySelectorAll('#intuba
 function closeIntubation(){document.getElementById('intubationModal').classList.remove('open');}
 function selectIntubOption(btn,val){intubSelection=val;document.querySelectorAll('#intubationModal .option-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');}
 function submitIntubation(){addEvent('Intubation — '+(intubSelection||'confirmation pending'),'event');closeIntubation();}
+function submitUnsuccessfulIntubation(){addEvent('Unsuccessful Intubation','event');closeIntubation();}
+function openECMO(){ecmoSelection=null;document.querySelectorAll('#ecmoModal .option-btn').forEach(function(b){b.classList.remove('selected');});document.getElementById('ecmoLogBtn').textContent='Log ECMO';document.getElementById('ecmoModal').classList.add('open');}
+function closeECMO(){document.getElementById('ecmoModal').classList.remove('open');}
+function selectECMOOption(btn,val){ecmoSelection=val;document.querySelectorAll('#ecmoModal .option-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');document.getElementById('ecmoLogBtn').textContent='Log '+val;}
+function submitECMO(){if(!ecmoSelection){alert('Please select an option.');return;}addEvent(ecmoSelection,'event');closeECMO();}
+function openAirwayConfirm(){airwaySelection=null;document.querySelectorAll('#airwayConfirmModal .option-btn').forEach(function(b){b.classList.remove('selected');});document.getElementById('airwayConfirmModal').classList.add('open');}
+function closeAirwayConfirm(){document.getElementById('airwayConfirmModal').classList.remove('open');}
+function selectAirwayOption(btn,val){airwaySelection=val;document.querySelectorAll('#airwayConfirmModal .option-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');}
+function submitAirwayConfirm(){addEvent('Airway confirmed — '+(airwaySelection||'method pending'),'event');closeAirwayConfirm();}
+function openInsulin(){document.getElementById('insulinUnits').value='';document.getElementById('insulinModal').classList.add('open');setTimeout(function(){document.getElementById('insulinUnits').focus();},100);}
+function closeInsulin(){document.getElementById('insulinModal').classList.remove('open');}
+function submitInsulin(){var v=parseInt(document.getElementById('insulinUnits').value);if(!v||v<1){alert('Enter units.');return;}addEvent('Insulin '+v+' units IV','med');closeInsulin();}
+function openDeleteEvent(idx){
+  deleteEventIndex=idx;
+  var visible=events.filter(function(e){return !isFiltered(e);});
+  var e=visible[idx];
+  document.getElementById('deleteEventText').textContent=e.elapsed+' — '+e.text;
+  document.getElementById('deleteEventModal').classList.add('open');
+}
+function closeDeleteEvent(){
+  document.getElementById('deleteEventModal').classList.remove('open');
+  deleteEventIndex=null;
+}
+function confirmDeleteEvent(){
+  if(deleteEventIndex===null)return;
+  var idxToDelete=deleteEventIndex;
+  closeDeleteEvent(); // close and null index FIRST before any re-renders
+  var visible=events.filter(function(e){return !isFiltered(e);});
+  var target=visible[idxToDelete];
+  var realIdx=events.indexOf(target);
+  if(realIdx>-1)events.splice(realIdx,1);
+  recalculateCounts();
+  renderLog();renderMiniLog();
+}
+function recalculateCounts(){
+  var sc=0;
+  events.forEach(function(e){
+    if(e.tag==='shock'){sc++;e.text=e.text.replace(/Shock #\d+/,'Shock #'+sc);}
+  });
+  shockCount=sc;
+  var sb=document.getElementById('shockBadge');
+  if(sb){sb.textContent=sc;sb.style.display=sc>0?'flex':'none';}
+  document.getElementById('tileShockSub').textContent=currentJoules+'J'+(sc?' \xd7 '+sc:'');
+  var ec=0;
+  events.forEach(function(e){
+    if(e.tag==='epi'&&e.text.indexOf('Epinephrine')===0){ec++;e.text=e.text.replace(/dose #\d+/,'dose #'+ec);}
+  });
+  epiDoses=ec;
+  var eb=document.getElementById('epiBadge');
+  if(eb){eb.textContent=ec;eb.style.display=ec>0?'flex':'none';}
+  if(ec===0){clearInterval(epiInterval);epiLastTime=null;document.getElementById('tileEpiTime').textContent='\u2014';document.getElementById('tileEpiSub').textContent='Not given';document.getElementById('epiTile').className='tile tile-epi';}
+  var medCounts={};
+  events.forEach(function(e){if(e.tag==='med'){var key=e.text.replace(/ \u2014 dose #\d+/,'');medCounts[key]=(medCounts[key]||0)+1;}});
+  document.querySelectorAll('.med-btn').forEach(function(btn){
+    var badgeEl=btn.querySelector('.badge');if(!badgeEl)return;
+    var nameEl=btn.childNodes[0];var subEl=btn.querySelector('.med-sub');
+    var btnName=(nameEl&&nameEl.nodeType===3?nameEl.textContent.trim():'');
+    var btnSub=subEl?subEl.textContent.trim():'';
+    var count=0;
+    Object.keys(medCounts).forEach(function(k){
+      if(k.toLowerCase().indexOf(btnName.toLowerCase())>-1&&(!btnSub||k.toLowerCase().indexOf(btnSub.toLowerCase())>-1)){count=medCounts[k];}
+    });
+    badgeEl.textContent=count;badgeEl.style.display=count>0?'flex':'none';
+  });
+  var runs=0;
+  events.forEach(function(e){if(e.tag==='cpr'&&e.text.indexOf('CPR started')===0)runs++;});
+  cprRunNumber=runs;
+}
 function openSyncCardio(){syncRhythm=null;syncJ=null;document.querySelectorAll('#syncCardioModal .option-btn,.j-btn').forEach(function(b){b.classList.remove('selected');});document.getElementById('syncJCustom').value='';document.getElementById('syncCardioModal').classList.add('open');}
 function closeSyncCardio(){document.getElementById('syncCardioModal').classList.remove('open');}
 function selectSyncRhythm(btn,r){syncRhythm=r;document.querySelectorAll('#syncCardioModal .option-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');}
@@ -838,7 +974,7 @@ function addEvent(text,tag){
 function renderMiniLog(){
   var visible=events.filter(function(e){return !isFiltered(e);});
   var html=visible.length?visible.slice(-6).reverse().map(function(e){
-    return '<div class="mini-item'+(e.gwtg?' gwtg-row':'')+'"><span class="mini-el">'+e.elapsed+'</span><span class="mini-txt">'+e.text+'</span><span class="mini-tag tag-'+e.tag+'">'+e.tag+'</span></div>';
+    return '<div class="mini-item'+(e.gwtg?' gwtg-row':'')+'"><span style="color:var(--muted);font-size:12px;flex-shrink:0">·</span><span class="mini-el">'+e.elapsed+'</span><span class="mini-txt">'+e.text+'</span><span class="mini-tag tag-'+e.tag+'">'+e.tag+'</span></div>';
   }).join(''):'<div style="padding:12px;text-align:center;color:var(--muted);font-size:12px">No events yet</div>';
   ['miniLog','miniLogEvents'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML=html;});
 }
@@ -846,36 +982,79 @@ function renderLog(){
   var el=document.getElementById('eventLog');
   var visible=events.filter(function(e){return !isFiltered(e);});
   if(!visible.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No events yet</div>';return;}
-  el.innerHTML=visible.map(function(e){
-    return '<div class="ev-item'+(e.gwtg?' gwtg-row':'')+'"><span class="ev-el">'+e.elapsed+'</span><span class="ev-wall">'+e.wall+'</span><span class="ev-txt">'+e.text+'</span>'+(e.gwtg?'<span class="ev-gwtg">★</span>':'')+'<span class="ev-tag tag-'+e.tag+'">'+e.tag+'</span></div>';
+  el.innerHTML=visible.map(function(e,i){
+    var deleteBtn=codeEnded?'<button onclick="openDeleteEvent('+i+')" style="background:none;border:none;color:var(--red);font-size:14px;cursor:pointer;padding:0 4px;flex-shrink:0;opacity:.7">✕</button>':'';
+    return '<div class="ev-item'+(e.gwtg?' gwtg-row':'')+'"><span style="color:var(--muted);font-size:13px;flex-shrink:0;margin-right:2px">·</span><span class="ev-el">'+e.elapsed+'</span><span class="ev-wall">'+e.wall+'</span><span class="ev-txt">'+e.text+'</span>'+(e.gwtg?'<span class="ev-gwtg">★</span>':'')+'<span class="ev-tag tag-'+e.tag+'">'+e.tag+'</span>'+deleteBtn+'</div>';
   }).join('');
   el.scrollTop=el.scrollHeight;
 }
-function copyLog(){
+function buildLogText(){
   var sep='══════════════════════════════════════';
   var div='──────────────────────────────────────';
+  // Build summary totals
+  var medCounts={};
+  var interventions=[];
+  events.filter(function(e){return !isFiltered(e);}).forEach(function(e){
+    if(e.tag==='med'){
+      var key=e.text.replace(/ — dose #\d+/,'');
+      medCounts[key]=(medCounts[key]||0)+1;
+    }
+    if(e.tag==='event'){interventions.push(e.text);}
+  });
+  var summaryLines=['TOTALS SUMMARY',div];
+  summaryLines.push('Shocks:        '+shockCount);
+  summaryLines.push('Epinephrine:   '+epiDoses+' dose'+(epiDoses!==1?'s':''));
+  summaryLines.push('CPR Runs:      '+cprRunNumber);
+  Object.keys(medCounts).forEach(function(k){
+    summaryLines.push((k+':').padEnd(15,' ')+' '+medCounts[k]+'×');
+  });
+  if(interventions.length){
+    summaryLines.push('');
+    summaryLines.push('Interventions:');
+    interventions.forEach(function(i){summaryLines.push('  · '+i);});
+  }
   var lines=[
     'CODE BLUE NAVI — EVENT LOG',
     sep,
     'Start:    '+(codeStart?new Date(codeStart).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—'),
     'Date:     '+(codeStart?new Date(codeStart).toLocaleDateString([],{month:'2-digit',day:'2-digit',year:'numeric'}):'—'),
     'Duration: '+fmt(codeElapsed()),
-    'Shocks:   '+shockCount+'   |   Epi doses: '+epiDoses,
+    sep
+  ].concat(summaryLines).concat([
     sep,
     '★ = GWTG-required measure',
     div,
     '  ELAPSED   WALL TIME    EVENT',
     div
-  ];
+  ]);
   events.filter(function(e){return !isFiltered(e);}).forEach(function(e){
     var star=e.gwtg?'★ ':'  ';
-    lines.push(star+e.elapsed+'   '+e.wall+'   '+e.text);
+    lines.push(star+'· '+e.elapsed+'   '+e.wall+'   '+e.text);
   });
   lines.push(div);
   lines.push('END OF LOG — Code Blue Navi | UCI Health ALERT');
-  var text=lines.join('\n');
-  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){alert('Copied to clipboard');});}
-  else{var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('Copied');}
+  return lines.join('\n');
+}
+function shareLog(){
+  var text=buildLogText();
+  if(navigator.share){
+    navigator.share({title:'Code Blue Navi — Event Log',text:text}).catch(function(){copyLogFallback(text);});
+  } else {
+    copyLogFallback(text);
+  }
+}
+function copyLogFallback(text){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(function(){alert('Copied to clipboard');}).catch(function(){manualCopyFallback(text);});
+  } else {
+    manualCopyFallback(text);
+  }
+}
+function manualCopyFallback(text){
+  var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');alert('Copied to clipboard');}catch(e){alert('Copy failed — please copy manually.');}
+  document.body.removeChild(ta);
 }
 function switchTab(name,el){
   document.querySelectorAll('.page').forEach(function(p){p.style.display='none';p.classList.remove('active');});
