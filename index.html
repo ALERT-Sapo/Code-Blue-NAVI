@@ -404,7 +404,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
   <div style="flex-shrink:0;padding:8px 16px 12px;background:var(--bg);border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px">
     <button class="btn btn-cyan" onclick="shareLog()" style="width:100%;height:42px;font-size:13px;font-weight:700">📤 Share / Export Log</button>
     <div id="endedBanner" style="display:none" class="ended-banner">Code ended — all timers stopped. Edit or export log above.</div>
-    <button class="btn btn-red" onclick="openEndCode()" style="width:100%;height:54px;font-size:16px;font-weight:700" id="endCodeBtn">⬛ End Code</button>
+    <button class="btn btn-red" onclick="openInitialRhythmCheck()" style="width:100%;height:54px;font-size:16px;font-weight:700" id="endCodeBtn">⬛ End Code</button>
   </div>
 </div>
 
@@ -651,6 +651,23 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
   </div>
 </div>
 
+<!-- INITIAL RHYTHM CHECK MODAL -->
+<div class="modal-bg" id="initialRhythmCheckModal">
+  <div class="modal">
+    <h3 style="color:var(--amber)">⚠ Confirm Initial Rhythm</h3>
+    <div id="initialRhythmCheckBody"></div>
+    <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px;display:none" id="initialRhythmPickerWrap">
+      <button class="option-btn" onclick="selectInitialRhythmCorrection(this,'VF')">VF</button>
+      <button class="option-btn" onclick="selectInitialRhythmCorrection(this,'pVT')">pVT</button>
+      <button class="option-btn" onclick="selectInitialRhythmCorrection(this,'PEA')">PEA</button>
+      <button class="option-btn" onclick="selectInitialRhythmCorrection(this,'Asystole')">Asystole</button>
+    </div>
+    <button class="log-btn" id="initialRhythmCheckConfirmBtn" onclick="submitInitialRhythmCheck()" style="display:none">Confirm &amp; End Code</button>
+    <button class="btn btn-red" id="initialRhythmEndAnywayBtn" onclick="proceedEndCode()" style="width:100%;height:48px;font-size:15px;font-weight:700;margin-bottom:8px;display:none">End Code</button>
+    <button class="modal-close" id="initialRhythmSkipBtn" onclick="proceedEndCode()">Skip — End Code</button>
+  </div>
+</div>
+
 <script>
 var codeStart=null,codeInterval=null,codeActive=false,codeEnded=false;
 var cprState='idle',cprCycleStart=null,cprPauseStart=null,cprInterval=null,pauseInterval=null,cprCheckMode=false;
@@ -692,15 +709,87 @@ function openResetConfirm(){document.getElementById('resetConfirmModal').classLi
 function closeResetConfirm(){document.getElementById('resetConfirmModal').classList.remove('open');}
 function openEndCode(){document.getElementById('endCodeModal').classList.add('open');}
 function closeEndCode(){document.getElementById('endCodeModal').classList.remove('open');}
-function confirmEndCode(){
+function confirmEndCode(){proceedEndCode();}
+function proceedEndCode(){
+  document.getElementById('initialRhythmCheckModal').classList.remove('open');
+  document.getElementById('endCodeModal').classList.remove('open');
   codeEnded=true;
   clearInterval(codeInterval);clearInterval(cprInterval);clearInterval(pauseInterval);clearInterval(epiInterval);
   addEvent('Code ended — total duration: '+fmt(codeElapsed()),'code');
   document.getElementById('endCodeBtn').style.display='none';
   document.getElementById('endedBanner').style.display='block';
   document.getElementById('cprBtn').disabled=true;document.getElementById('cprBtn').style.opacity='.4';
-  closeEndCode();
   switchTab('log',document.querySelectorAll('.tab')[2]);
+}
+var initialRhythmCorrectionSelected=null;
+function openInitialRhythmCheck(){
+  // Find the initial rhythm event if any
+  var initEvt=null;
+  for(var i=0;i<events.length;i++){
+    if(events[i].tag==='rhythm'&&events[i].text.indexOf('[initial]')>-1){initEvt=events[i];break;}
+  }
+  var modal=document.getElementById('initialRhythmCheckModal');
+  var body=document.getElementById('initialRhythmCheckBody');
+  var picker=document.getElementById('initialRhythmPickerWrap');
+  var confirmBtn=document.getElementById('initialRhythmCheckConfirmBtn');
+  var endAnywayBtn=document.getElementById('initialRhythmEndAnywayBtn');
+  var skipBtn=document.getElementById('initialRhythmSkipBtn');
+  initialRhythmCorrectionSelected=null;
+  document.querySelectorAll('#initialRhythmPickerWrap .option-btn').forEach(function(b){b.classList.remove('selected');});
+  picker.style.display='none';confirmBtn.style.display='none';endAnywayBtn.style.display='none';
+  if(initEvt){
+    // Extract rhythm name from "Rhythm: X [initial]"
+    var rhythmName=initEvt.text.replace('Rhythm: ','').replace(' [initial]','');
+    body.innerHTML='<p style="font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.6">The initial rhythm was logged as:<br><strong style="color:var(--text);font-size:16px">'+rhythmName+'</strong><br><br>Was this the true initial rhythm, or has it been updated since arrival?</p><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"><button class="option-btn" onclick="confirmInitialRhythmCorrect()">✓ Yes — this was the initial rhythm</button><button class="option-btn" onclick="showInitialRhythmPicker()">✗ No — correct it</button></div>';
+    skipBtn.textContent='Skip — End Code';
+  } else {
+    body.innerHTML='<p style="font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.6">No initial rhythm was recorded during this code.<br><br>Would you like to add one now?</p><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"><button class="option-btn" onclick="showInitialRhythmPicker()">Add Initial Rhythm</button></div>';
+    endAnywayBtn.style.display='flex';
+    skipBtn.textContent='Skip — End Code Without Rhythm';
+  }
+  modal.classList.add('open');
+}
+function confirmInitialRhythmCorrect(){
+  // Nothing to change — proceed to end
+  proceedEndCode();
+}
+function showInitialRhythmPicker(){
+  document.getElementById('initialRhythmPickerWrap').style.display='flex';
+  document.getElementById('initialRhythmPickerWrap').style.flexDirection='column';
+  document.getElementById('initialRhythmPickerWrap').style.gap='7px';
+  document.getElementById('initialRhythmPickerWrap').style.marginBottom='12px';
+}
+function selectInitialRhythmCorrection(btn,r){
+  initialRhythmCorrectionSelected=r;
+  document.querySelectorAll('#initialRhythmPickerWrap .option-btn').forEach(function(b){b.classList.remove('selected');});
+  btn.classList.add('selected');
+  document.getElementById('initialRhythmCheckConfirmBtn').style.display='flex';
+}
+function submitInitialRhythmCheck(){
+  if(!initialRhythmCorrectionSelected)return;
+  // Strip [initial] from the original entry and track if one existed
+  var hadInitial=false;
+  for(var i=0;i<events.length;i++){
+    if(events[i].tag==='rhythm'&&events[i].text.indexOf('[initial]')>-1){
+      events[i].text=events[i].text.replace(' [initial]','');
+      events[i].gwtg=false;
+      hadInitial=true;
+      break;
+    }
+  }
+  // Insert corrected/late entry right after "Code started" (position 1), timestamped at code start
+  var refEvt=events[0]||{elapsed:'00:00',wall:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})};
+  var label=hadInitial?'Initial rhythm corrected: ':'Initial rhythm (late entry): ';
+  var newEvt={
+    elapsed:refEvt.elapsed,
+    wall:refEvt.wall,
+    text:label+initialRhythmCorrectionSelected+' [initial]',
+    tag:'rhythm',
+    gwtg:true
+  };
+  events.splice(1,0,newEvt);
+  initialRhythmLogged=true;
+  proceedEndCode();
 }
 function handleCPR(){
   unlockAudio();
@@ -944,6 +1033,18 @@ function recalculateCounts(){
   var runs=0;
   events.forEach(function(e){if(e.tag==='cpr'&&e.text.indexOf('CPR started')===0)runs++;});
   cprRunNumber=runs;
+  // Recount and renumber cycles within the current run.
+  // Cycle 1 is implicit in the 'CPR started' entry, so start at 1.
+  // Subsequent cycles are logged as 'CPR cycle #N — run #M'.
+  var cycleCount=cprRunNumber>0?1:0;
+  events.forEach(function(e){
+    if(e.tag==='cpr'&&e.text.indexOf('CPR cycle')===0&&e.text.indexOf('run #'+cprRunNumber)>-1){
+      cycleCount++;
+      e.text=e.text.replace(/CPR cycle #\d+/,'CPR cycle #'+cycleCount);
+    }
+  });
+  cprCycleNumber=cycleCount;
+  updateCPRCounterDisplay();
 }
 function openSyncCardio(){syncRhythm=null;syncJ=null;document.querySelectorAll('#syncCardioModal .option-btn,.j-btn').forEach(function(b){b.classList.remove('selected');});document.getElementById('syncJCustom').value='';document.getElementById('syncCardioModal').classList.add('open');}
 function closeSyncCardio(){document.getElementById('syncCardioModal').classList.remove('open');}
