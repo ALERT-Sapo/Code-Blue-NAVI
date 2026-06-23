@@ -3,6 +3,13 @@ UCI Health ALERT
 
 ---
 
+## Version 1.3 — June 2026
+
+### Improvements
+- **Screen Wake Lock** — screen no longer dims or sleeps while a code is active; lock is automatically released when End Code is confirmed and re-acquired if the user briefly switches away and returns mid-code; fails silently on unsupported devices
+
+---
+
 ## Version 1.2 — June 2026
 
 ### New Features
