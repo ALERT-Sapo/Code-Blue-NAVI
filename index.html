@@ -670,6 +670,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
 
 <script>
 var codeStart=null,codeInterval=null,codeActive=false,codeEnded=false;
+var wakeLock=null;
 var cprState='idle',cprCycleStart=null,cprPauseStart=null,cprInterval=null,pauseInterval=null,cprCheckMode=false;
 var cprRunStart=null,cprRunNumber=0,cprCycleNumber=0,prechargeShown=false;
 var epiInterval=null,epiLastTime=null,epiDoses=0,epiAlerted3=false,epiAlerted5=false;
@@ -701,6 +702,7 @@ function startCode(){
   document.getElementById('wallTime').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   addEvent('Code started','code');
   codeInterval=setInterval(function(){document.getElementById('codeTimer').textContent=fmt(codeElapsed());},500);
+  requestWakeLock();
 }
 function openClearConfirm(){document.getElementById('clearConfirmModal').classList.add('open');}
 function closeClearConfirm(){document.getElementById('clearConfirmModal').classList.remove('open');}
@@ -715,6 +717,7 @@ function proceedEndCode(){
   document.getElementById('endCodeModal').classList.remove('open');
   codeEnded=true;
   clearInterval(codeInterval);clearInterval(cprInterval);clearInterval(pauseInterval);clearInterval(epiInterval);
+  if(wakeLock){wakeLock.release().catch(function(){});wakeLock=null;}
   addEvent('Code ended — total duration: '+fmt(codeElapsed()),'code');
   document.getElementById('endCodeBtn').style.display='none';
   document.getElementById('endedBanner').style.display='block';
@@ -1197,6 +1200,13 @@ function tonePauseEight(){playTone(600,.15,'sine',.3);}
 function tonePauseTen(){playSeq([{f:900,d:.15,t:'square',v:.5,ms:0},{f:900,d:.15,t:'square',v:.5,ms:200},{f:900,d:.25,t:'square',v:.6,ms:400}]);}
 function toneEpiDue(){playSeq([{f:660,d:.2,t:'sine',v:.45,ms:0},{f:880,d:.3,t:'sine',v:.5,ms:250}]);}
 function toneEpiLate(){playSeq([{f:440,d:.15,t:'sawtooth',v:.45,ms:0},{f:440,d:.15,t:'sawtooth',v:.45,ms:180},{f:550,d:.25,t:'sawtooth',v:.55,ms:360}]);}
+async function requestWakeLock(){
+  if(!('wakeLock' in navigator))return;
+  try{wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
+}
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='visible'&&codeActive&&!codeEnded){requestWakeLock();}
+});
 </script>
 </body>
 </html>
