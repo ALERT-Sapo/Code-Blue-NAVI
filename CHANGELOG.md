@@ -1,6 +1,15 @@
-[CHANGELOG (1).md](https://github.com/user-attachments/files/29942702/CHANGELOG.1.md)
+[CHANGELOG (2).md](https://github.com/user-attachments/files/29944114/CHANGELOG.2.md)
 # Code Blue Navi — Changelog
 UCI Health ALERT
+
+---
+
+## Version 1.5 — July 2026
+
+### New Features
+- **"Copy for Haiku" button** — a second option on the Log tab, next to Share/Export Log, that copies a plain-ASCII version of the log straight to the clipboard
+  - Converts the in-app display characters (★ GWTG marker, · bullets, — em dashes, ═/─ separator lines, × in dose counts, ₂ in ETCO₂) to plain equivalents (`*`, `-`, `x`, `2`) — fixes pastes silently failing into restricted fields (e.g. Epic Haiku messages) that reject non-ASCII input
+  - The original Share/Export Log button is unchanged and still sends the fully-formatted version — useful when sending to a personal phone or elsewhere formatting isn't an issue
 
 ---
 
