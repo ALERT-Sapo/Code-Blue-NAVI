@@ -404,6 +404,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
   </div>
   <div style="flex-shrink:0;padding:8px 16px 12px;background:var(--bg);border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px">
     <button class="btn btn-cyan" onclick="shareLog()" style="width:100%;height:42px;font-size:13px;font-weight:700">📤 Share / Export Log</button>
+    <button class="btn" onclick="copyLogAscii()" style="width:100%;height:38px;font-size:12px;font-weight:700;background:var(--surface2);border-color:var(--border);color:var(--muted)">📋 Copy for Haiku (plain text)</button>
     <div id="endedBanner" style="display:none" class="ended-banner">Code ended — all timers stopped. Edit or export log above.</div>
     <button class="btn btn-red" onclick="openInitialRhythmCheck()" style="width:100%;height:54px;font-size:16px;font-weight:700" id="endCodeBtn">⬛ End Code</button>
   </div>
@@ -1093,6 +1094,17 @@ function renderLog(){
   }).join('');
   el.scrollTop=el.scrollHeight;
 }
+function toAsciiSafe(s){
+  return s
+    .replace(/[—–]/g,'-')
+    .replace(/·/g,'-')
+    .replace(/★/g,'*')
+    .replace(/═/g,'=')
+    .replace(/─/g,'-')
+    .replace(/₂/g,'2')
+    .replace(/×/g,'x')
+    .replace(/[^\x00-\x7F]/g,'');
+}
 function buildLogText(){
   var sep='══════════════════════════════════════';
   var div='──────────────────────────────────────';
@@ -1147,6 +1159,10 @@ function shareLog(){
   } else {
     copyLogFallback(text);
   }
+}
+function copyLogAscii(){
+  var text=toAsciiSafe(buildLogText());
+  copyLogFallback(text);
 }
 function copyLogFallback(text){
   if(navigator.clipboard){
