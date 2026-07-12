@@ -1,12 +1,24 @@
+[CHANGELOG (1).md](https://github.com/user-attachments/files/29942702/CHANGELOG.1.md)
 # Code Blue Navi — Changelog
 UCI Health ALERT
 
 ---
 
-## Version 1.3 — June 2026
+## Version 1.4 — July 2026
 
 ### Improvements
-- **Screen Wake Lock** — screen no longer dims or sleeps while a code is active; lock is automatically released when End Code is confirmed and re-acquired if the user briefly switches away and returns mid-code; fails silently on unsupported devices
+- **Global tap feedback** — every button, tile, and option across the app now gives a brief visual pulse (brightened glow) on press, a short haptic tick where the device supports it, and a quiet low tone
+  - Haptic tick uses the Vibration API (`navigator.vibrate`), same as existing shock/epi/pause alerts — works on Android, silently does nothing on iOS Safari since the API isn't implemented there
+  - Audio tone is a short, quiet low-pitched tick, distinct from the app's existing rhythm-check/epi/shock alert tones so it won't be mistaken for one
+  - Feedback is suppressed if the touch moves more than ~12px before release, so scrolling through a button (e.g. on the Log tab) doesn't trigger it
+  - Implemented as a single global tap listener rather than per-button code, so it applies uniformly and needs no changes if new buttons are added later
+
+---
+
+## Version 1.3 — 2026
+
+### New Features
+- **Wake Lock** — requests the Screen Wake Lock API when a code starts, keeping the screen from sleeping/dimming during active use; re-requests on tab visibility change and releases on End Code
 
 ---
 
