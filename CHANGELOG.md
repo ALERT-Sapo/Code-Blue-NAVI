@@ -1,6 +1,12 @@
-[CHANGELOG (2).md](https://github.com/user-attachments/files/29944114/CHANGELOG.2.md)
 # Code Blue Navi — Changelog
 UCI Health ALERT
+
+---
+
+## Version 1.6 — August 2026
+
+### New Features
+- **Atropine** — added to the Medications sheet (1mg dose); logs as "Atropine 1mg"
 
 ---
 
