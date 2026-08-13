@@ -61,7 +61,9 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
 .badge-amber{background:var(--amber);color:#000}
 .cpr-section{padding:10px 16px 10px}
 .cpr-center{display:flex;flex-direction:column;align-items:center;gap:8px}
-.cpr-ring-row{display:flex;align-items:center;width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-height:128px}
+.cpr-ring-row{display:flex;align-items:center;width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-height:128px;position:relative}
+.metro-toggle{position:absolute;top:6px;right:8px;width:30px;height:30px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}
+.metro-toggle.active{background:var(--cyan-dim);border-color:var(--cyan-border);color:var(--cyan);box-shadow:0 0 8px rgba(0,212,255,.3)}
 .cpr-ring-left{flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:10px 10px 10px 12px}
 .cpr-ring-right{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 14px;gap:4px;border-left:1px solid var(--border)}
 .check-label{display:none;flex-direction:column}
@@ -254,6 +256,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
               <div style="font-size:11px;color:var(--muted)">Run <span id="cprRunDisplay" style="color:var(--cyan);font-weight:700">1</span> &nbsp;·&nbsp; Cycle <span id="cprCycleDisplay" style="color:var(--cyan);font-weight:700">1</span></div>
             </div>
           </div>
+          <button class="metro-toggle" id="metroToggleBtn" onclick="toggleMetronome()">🎵</button>
         </div>
         <div class="pause-bar-wrap" id="pauseBarWrap">
           <div class="pause-bar-fill" id="pauseBarFill" style="width:0%"></div>
@@ -441,7 +444,6 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
       <button class="med-btn" onclick="logMedSheet(this,'Calcium Chloride 1g')">Ca Chloride<span class="med-sub">1g</span><span class="badge badge-amber" style="display:none">0</span></button>
       <button class="med-btn" onclick="logMedSheet(this,'Magnesium 2g')">Magnesium<span class="med-sub">2g</span><span class="badge badge-amber" style="display:none">0</span></button>
       <button class="med-btn" onclick="logMedSheet(this,'Vasopressin 40 units')">Vasopressin<span class="med-sub">40 units</span><span class="badge badge-amber" style="display:none">0</span></button>
-      <button class="med-btn" onclick="logMedSheet(this,'Atropine 1mg')">Atropine<span class="med-sub">1mg</span><span class="badge badge-amber" style="display:none">0</span></button>
       <button class="med-btn" onclick="logMedSheet(this,'D50 IVP')">D50<span class="med-sub">IVP</span><span class="badge badge-amber" style="display:none">0</span></button>
       <button class="med-btn" onclick="closeMeds();setTimeout(openInsulin,200)">Insulin<span class="med-sub">units</span><span class="badge badge-amber" style="display:none">0</span></button>
       <button class="med-btn" style="background:var(--surface2);border-color:var(--border);color:var(--muted)" onclick="closeMeds();setTimeout(openCustomMed,200)">Custom<span class="med-sub">Free text</span></button>
@@ -683,6 +685,7 @@ var roscRhythm=null,intubSelection=null,syncRhythm=null,syncJ=null,pacingRhythm=
 var ecmoSelection=null,airwaySelection=null;
 var initialRhythmLogged=false;
 var deleteEventIndex=null;
+var metronomeOn=false,metroInterval=null,metroDuckTimeout=null;
 
 function isGWTG(text,tag){
   if(tag==='code'&&(text.indexOf('Code started')===0||text.indexOf('Code ended')===0))return true;
@@ -719,12 +722,15 @@ function proceedEndCode(){
   document.getElementById('initialRhythmCheckModal').classList.remove('open');
   document.getElementById('endCodeModal').classList.remove('open');
   codeEnded=true;
-  clearInterval(codeInterval);clearInterval(cprInterval);clearInterval(pauseInterval);clearInterval(epiInterval);
+  clearInterval(codeInterval);clearInterval(cprInterval);clearInterval(pauseInterval);clearInterval(epiInterval);stopMetronome();
   if(wakeLock){wakeLock.release().catch(function(){});wakeLock=null;}
   addEvent('Code ended — total duration: '+fmt(codeElapsed()),'code');
   document.getElementById('endCodeBtn').style.display='none';
   document.getElementById('endedBanner').style.display='block';
   document.getElementById('cprBtn').disabled=true;document.getElementById('cprBtn').style.opacity='.4';
+  metronomeOn=false;
+  var metroBtn=document.getElementById('metroToggleBtn');
+  metroBtn.classList.remove('active');metroBtn.disabled=true;metroBtn.style.opacity='.4';
   switchTab('log',document.querySelectorAll('.tab')[2]);
 }
 var initialRhythmCorrectionSelected=null;
@@ -797,6 +803,24 @@ function submitInitialRhythmCheck(){
   initialRhythmLogged=true;
   proceedEndCode();
 }
+function toggleMetronome(){
+  metronomeOn=!metronomeOn;
+  var btn=document.getElementById('metroToggleBtn');
+  if(metronomeOn){btn.classList.add('active');if(cprState==='active')startMetronome();}
+  else{btn.classList.remove('active');stopMetronome();}
+}
+function startMetronome(){
+  stopMetronome();
+  var bpm=110,interval=60000/bpm;
+  metroInterval=setInterval(function(){playTone(1400,.07,'square',.38);},interval);
+}
+function stopMetronome(){clearInterval(metroInterval);metroInterval=null;clearTimeout(metroDuckTimeout);metroDuckTimeout=null;}
+function duckMetronome(ms){
+  if(!metronomeOn)return;
+  clearInterval(metroInterval);metroInterval=null;
+  clearTimeout(metroDuckTimeout);
+  metroDuckTimeout=setTimeout(function(){if(metronomeOn&&cprState==='active')startMetronome();},ms);
+}
 function handleCPR(){
   unlockAudio();
   if(!codeActive||codeEnded)return;
@@ -806,6 +830,7 @@ function handleCPR(){
 }
 function startCPRCycle(first){
   cprState='active';cprCheckMode=false;prechargeShown=false;cprCycleStart=now();
+  if(metronomeOn&&!metroInterval)startMetronome();
   cprCycleNumber++;
   if(first){cprRunNumber++;cprRunStart=now();addEvent('CPR started — run #'+cprRunNumber,'cpr');}
   else{addEvent('CPR cycle #'+cprCycleNumber+' — run #'+cprRunNumber,'cpr');}
@@ -828,6 +853,7 @@ function updateCPRCounterDisplay(){
 }
 function pauseCPR(){
   cprState='paused';cprPauseStart=now();clearInterval(cprInterval);
+  if(metronomeOn){clearInterval(metroInterval);metroInterval=null;clearTimeout(metroDuckTimeout);metroDuckTimeout=null;}
   document.getElementById('cprBtn').className='btn btn-pause-warn cpr-main-btn';
   document.getElementById('cprBtnText').textContent='CPR Paused — Tap to Resume';
   document.getElementById('cprStatusText').textContent='Time off chest...';
@@ -871,7 +897,7 @@ function enterCheckMode(){
   document.getElementById('cprSubTxt').setAttribute('fill','#ff3355');document.getElementById('cprSubTxt').textContent='ongoing';
   document.getElementById('prechargeLabel').style.display='none';
   document.getElementById('checkLabel').style.display='flex';document.getElementById('cprStatusText').style.display='none';
-  addEvent('Pulse/Rhythm check','cpr');vibrateLong();toneRhythmCheck();
+  addEvent('Pulse/Rhythm check','cpr');vibrateLong();toneRhythmCheck();duckMetronome(850);
 }
 function tickCPR(){
   if(!cprCycleStart||cprState!=='active')return;
@@ -889,7 +915,7 @@ function tickCPR(){
           document.getElementById('cprStatusText').style.display='none';
           var ring=document.getElementById('cprRing');
           ring.setAttribute('stroke','#ffe600');ring.style.filter='drop-shadow(0 0 6px #ffe600)';
-          document.getElementById('cprBig').setAttribute('fill','#ffe600');vibrateLong();tonePrecharge();
+          document.getElementById('cprBig').setAttribute('fill','#ffe600');vibrateLong();tonePrecharge();duckMetronome(700);
         }
       } else {
         if(prechargeShown){prechargeShown=false;}
@@ -914,7 +940,7 @@ function tickPause(){
   document.getElementById('pauseBarLabel').textContent='Pause: '+s+'s';
   if(s<8){document.getElementById('pauseBarFill').style.background='var(--cyan-border)';document.getElementById('cprBtn').className='btn btn-pause-warn cpr-main-btn';document.getElementById('cprBtnText').textContent='CPR Paused — Tap to Resume';}
   else if(s===8){vibrateShort();tonePauseEight();}
-  else if(s===10){document.getElementById('pauseBarFill').style.background='#ff8800';document.getElementById('cprBtn').className='btn btn-pause-danger cpr-main-btn';document.getElementById('cprBtnText').textContent='⚠ 10s PAUSE — Resume CPR';vibrateLong();tonePauseTen();}
+  else if(s===10){document.getElementById('pauseBarFill').style.background='#ff8800';document.getElementById('cprBtn').className='btn btn-pause-danger cpr-main-btn';document.getElementById('cprBtnText').textContent='⚠ 10s PAUSE — Resume CPR';vibrateLong();tonePauseTen();duckMetronome(700);}
   else{document.getElementById('pauseBarFill').style.background='#ff3355';document.getElementById('cprBtn').className='btn btn-pause-danger cpr-main-btn';document.getElementById('cprBtnText').textContent='⚠ '+s+'s — Resume NOW';}
 }
 function giveEpi(){
@@ -930,8 +956,8 @@ function tickEpi(){
   var tile=document.getElementById('epiTile');
   document.getElementById('tileEpiTime').textContent=fmt(elapsed);
   if(elapsed<180){tile.className='tile tile-epi';document.getElementById('tileEpiSub').textContent='Next in '+fmt(180-elapsed);}
-  else if(elapsed<300){tile.className='tile tile-epi warn';document.getElementById('tileEpiSub').textContent='Due — give now';if(!epiAlerted3){epiAlerted3=true;vibrate();toneEpiDue();}}
-  else{tile.className='tile tile-epi danger';document.getElementById('tileEpiSub').textContent='>5 min!';if(!epiAlerted5){epiAlerted5=true;vibrate();toneEpiLate();}}
+  else if(elapsed<300){tile.className='tile tile-epi warn';document.getElementById('tileEpiSub').textContent='Due — give now';if(!epiAlerted3){epiAlerted3=true;vibrate();toneEpiDue();duckMetronome(600);}}
+  else{tile.className='tile tile-epi danger';document.getElementById('tileEpiSub').textContent='>5 min!';if(!epiAlerted5){epiAlerted5=true;vibrate();toneEpiLate();duckMetronome(650);}}
 }
 function deliverShock(){
   if(!codeActive||codeEnded)return;
