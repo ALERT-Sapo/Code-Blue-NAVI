@@ -1,9 +1,9 @@
 Code Blue Navi
 Mobile-optimized resuscitation timing and documentation tool for code blue navigation
-UCI Health ALERT Team — Acute Care Rapid Response & Code Blue Response
+Acute Care Rapid Response & Code Blue Response
 
 Overview
-Code Blue Navi is a Progressive Web App (PWA) built for real-time use during in-hospital cardiac arrest events. It was designed by and for the UCI Health ALERT Team to reduce decision latency, improve closed-loop communication, and support accurate GWTG-Resuscitation documentation during live code blue events.
+Code Blue Navi is a Progressive Web App (PWA) built for real-time use during in-hospital cardiac arrest events. It was designed by and for acute care rapid response & code blue response teams to reduce decision latency, improve closed-loop communication, and support accurate GWTG-Resuscitation documentation during live code blue events.
 The app runs entirely in the browser with no installation required and works offline after the first load. It is optimized for one-handed phone use under high-stress conditions.
 
 Features
@@ -86,7 +86,7 @@ No build process, no dependencies, no server required.
 Project Context
 Code Blue Navi was built as part of a broader resuscitation quality improvement initiative at UCI Health, including:
 
-The Compress to Success PDSA project targeting chest compression fraction ≥25%
+The Compress to Success PDSA project targeting chest compression fraction ≥80%
 ZOLL CaseReview integration for post-event data analysis
 A structured code blue debriefing program using the GAS model
 Pursuit of GWTG-Resuscitation Bronze designation (Q4 2026 target)
@@ -96,6 +96,6 @@ The app was designed to complement — not replace — Epic Code Narrator docume
 Built By
 Cristian Rosa — RN, MSN, CCRN
 UCI Health ALERT Team
-Clinical Nursing Leadership | Resuscitation QI
+
 
 2026 Cristian Rosa. All rights reserved.
