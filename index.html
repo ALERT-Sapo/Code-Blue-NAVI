@@ -676,7 +676,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
 <script>
 var codeStart=null,codeInterval=null,codeActive=false,codeEnded=false;
 var wakeLock=null;
-var cprState='idle',cprCycleStart=null,cprPauseStart=null,cprInterval=null,pauseInterval=null,cprCheckMode=false;
+var cprState='idle',cprCycleStart=null,cprPauseStart=null,cprInterval=null,pauseInterval=null,cprCheckMode=false,pauseTickLast=0;
 var cprRunStart=null,cprRunNumber=0,cprCycleNumber=0,prechargeShown=false;
 var epiInterval=null,epiLastTime=null,epiDoses=0,epiAlerted3=false,epiAlerted5=false;
 var shockCount=0,currentJoules=200;
@@ -852,7 +852,7 @@ function updateCPRCounterDisplay(){
   if(c&&r&&cy){c.style.display='flex';r.textContent=cprRunNumber;cy.textContent=cprCycleNumber;}
 }
 function pauseCPR(){
-  cprState='paused';cprPauseStart=now();clearInterval(cprInterval);
+  cprState='paused';cprPauseStart=now();pauseTickLast=0;clearInterval(cprInterval);
   if(metronomeOn){clearInterval(metroInterval);metroInterval=null;clearTimeout(metroDuckTimeout);metroDuckTimeout=null;}
   document.getElementById('cprBtn').className='btn btn-pause-warn cpr-main-btn';
   document.getElementById('cprBtnText').textContent='CPR Paused — Tap to Resume';
@@ -938,8 +938,11 @@ function tickPause(){
   var s=Math.floor((now()-cprPauseStart)/1000);
   document.getElementById('pauseBarFill').style.width=Math.min(s/15*100,100)+'%';
   document.getElementById('pauseBarLabel').textContent='Pause: '+s+'s';
-  if(s<8){document.getElementById('pauseBarFill').style.background='var(--cyan-border)';document.getElementById('cprBtn').className='btn btn-pause-warn cpr-main-btn';document.getElementById('cprBtnText').textContent='CPR Paused — Tap to Resume';}
+  if(s<8){document.getElementById('pauseBarFill').style.background='var(--cyan-border)';document.getElementById('cprBtn').className='btn btn-pause-warn cpr-main-btn';document.getElementById('cprBtnText').textContent='CPR Paused — Tap to Resume';
+    if(s>=1&&s!==pauseTickLast){pauseTickLast=s;playTone(520,.06,'sine',.32);}
+  }
   else if(s===8){vibrateShort();tonePauseEight();}
+  else if(s===9){vibrateShort();tonePauseNine();}
   else if(s===10){document.getElementById('pauseBarFill').style.background='#ff8800';document.getElementById('cprBtn').className='btn btn-pause-danger cpr-main-btn';document.getElementById('cprBtnText').textContent='⚠ 10s PAUSE — Resume CPR';vibrateLong();tonePauseTen();duckMetronome(700);}
   else{document.getElementById('pauseBarFill').style.background='#ff3355';document.getElementById('cprBtn').className='btn btn-pause-danger cpr-main-btn';document.getElementById('cprBtnText').textContent='⚠ '+s+'s — Resume NOW';}
 }
@@ -1240,7 +1243,8 @@ function getAudioCtx(){unlockAudio();return audioCtx;}
 function playSeq(tones){tones.forEach(function(t){setTimeout(function(){playTone(t.f,t.d,t.t,t.v);},t.ms||0);});}
 function tonePrecharge(){playSeq([{f:880,d:.25,t:'sine',v:.5,ms:0},{f:1100,d:.35,t:'sine',v:.6,ms:300}]);}
 function toneRhythmCheck(){playSeq([{f:1200,d:.2,t:'square',v:.4,ms:0},{f:1000,d:.2,t:'square',v:.4,ms:250},{f:800,d:.3,t:'square',v:.5,ms:500}]);}
-function tonePauseEight(){playTone(600,.15,'sine',.3);}
+function tonePauseEight(){playSeq([{f:700,d:.12,t:'square',v:.5,ms:0},{f:700,d:.16,t:'square',v:.5,ms:150}]);}
+function tonePauseNine(){playSeq([{f:800,d:.13,t:'square',v:.55,ms:0},{f:800,d:.13,t:'square',v:.55,ms:150},{f:800,d:.17,t:'square',v:.55,ms:300}]);}
 function tonePauseTen(){playSeq([{f:900,d:.15,t:'square',v:.5,ms:0},{f:900,d:.15,t:'square',v:.5,ms:200},{f:900,d:.25,t:'square',v:.6,ms:400}]);}
 function toneEpiDue(){playSeq([{f:660,d:.2,t:'sine',v:.45,ms:0},{f:880,d:.3,t:'sine',v:.5,ms:250}]);}
 function toneEpiLate(){playSeq([{f:440,d:.15,t:'sawtooth',v:.45,ms:0},{f:440,d:.15,t:'sawtooth',v:.45,ms:180},{f:550,d:.25,t:'sawtooth',v:.55,ms:360}]);}
