@@ -3,10 +3,26 @@ UCI Health ALERT
 
 ---
 
-## Version 1.6 — August 2026
+## Version 1.6 — September 2026
 
 ### New Features
-- **Atropine** — added to the Medications sheet (1mg dose); logs as "Atropine 1mg"
+- **End Code outcome prompt** — End Code now asks **ROSC** or **Pt expired** before anything locks, with a Cancel that returns to the code untouched (protects against accidental taps)
+  - If ROSC was already logged from the Main page, it's preselected so it isn't entered twice
+  - **Pt expired** — shows a warning that timers won't be available again until Reset All, runs the initial rhythm confirmation, logs "Code terminated — pt expired" (GWTG-marked), then stops all timers and locks the log
+  - **ROSC** — runs the initial rhythm confirmation, then enters **post-ROSC mode**: CPR and epi timers stop, the code timer keeps running, events can still be logged, and the log can be exported at any time
+  - **Re-arrest** — tapping Start CPR during post-ROSC starts a new CPR run, logs "Re-arrest — CPR restarted", resumes the epi timer from the last dose, and restores the End Code button
+  - **Close Code** — replaces End Code during post-ROSC; shows the same timer warning, then stops the code timer and locks the log
+- **Rhythm check review / back-charting** — after the outcome is chosen, a prompt offers to review every pulse/rhythm check (each CPR pause-to-resume window)
+  - Walks through checks one at a time, showing pause time, time off chest, any shocks delivered during that check, and the logged rhythm (or "No rhythm logged")
+  - Tapping VF / pVT / PEA / Asystole applies immediately: a missing rhythm is inserted as "Rhythm: X (late)" at that pause's timestamp (before any shock or CPR resume); an existing rhythm is silently overwritten
+  - Also available any time after the outcome via a **Review Rhythm Checks** button on the Log tab, which shows how many checks are missing a rhythm
+  - Gaps are flagged inline in the post-code log with a **+ Rhythm** button that opens just that check
+  - Checks that ended in ROSC with no rhythm logged are skipped, since the ROSC entry documents them
+- **Live rhythm chips** — while CPR is paused, a VF / pVT / PEA / Asys row appears under the pause bar if no rhythm has been logged since the pause; tapping one logs it normally and hides the row
+
+### Improvements
+- **ROSC rhythm picker** — two-column grid so all rhythms and the Confirm button fit on one screen without scrolling; Confirm/Cancel also stay pinned to the bottom of the sheet as a fallback on small phones
+- Delete (✕) on log entries is now available in post-ROSC mode as well as after the code is locked
 
 ---
 
