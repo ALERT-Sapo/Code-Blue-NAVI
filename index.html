@@ -178,6 +178,28 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
 .navi-reminder-text{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;text-transform:uppercase;letter-spacing:.3px}
 .start-btn{background:var(--red-dim);border:2px solid var(--red);border-radius:12px;color:var(--red);font-size:22px;font-weight:800;padding:18px 0;cursor:pointer;font-family:var(--font-sans);letter-spacing:1px;width:100%;text-shadow:0 0 12px rgba(255,51,85,.4);box-shadow:0 0 24px rgba(255,51,85,.15)}
 .start-btn:active{transform:scale(.97)}
+.check-chips{display:none;width:100%;gap:6px;align-items:center}
+.check-chips-label{font-size:11px;color:var(--purple);font-weight:700;white-space:nowrap;margin-right:2px}
+.check-chip{flex:1;height:38px;border-radius:7px;border:1px solid var(--purple-border);background:var(--purple-dim);color:var(--purple);font-family:var(--font-sans);font-weight:700;font-size:13px;cursor:pointer;transition:filter .15s ease,box-shadow .15s ease,all .12s}
+.check-chip:active{transform:scale(.96)}
+.rosc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.rosc-grid .option-btn{height:auto;min-height:42px;font-size:12px;line-height:1.25;padding:6px}
+.modal-actions{position:sticky;bottom:0;background:var(--surface);padding-top:4px}
+.postrosc-banner{background:var(--green-dim);border:1px solid var(--green-border);border-radius:8px;padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--green);line-height:1.45}
+.bc-gap-row{padding:6px 10px 8px 24px;border-bottom:1px solid var(--border);background:rgba(255,204,0,.05);display:flex;align-items:center;gap:8px}
+.bc-gap-text{color:var(--amber);font-size:11px;flex:1}
+.bc-add-btn{background:var(--amber-dim);border:1px solid var(--amber-border);border-radius:6px;color:var(--amber);font-family:var(--font-sans);font-weight:700;font-size:12px;padding:5px 10px;cursor:pointer}
+.bc-add-btn:active{transform:scale(.96)}
+.bc-info{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;line-height:1.6;color:var(--text)}
+.bc-info.missing{border-color:var(--amber-border)}
+.bc-missing{color:var(--amber);font-weight:700}
+.bc-shock{color:var(--yellow)}
+.bc-rhythm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.bc-rhythm-grid .option-btn{height:52px;font-size:16px;font-weight:700}
+.bc-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bc-nav .modal-close,.bc-nav .log-btn{margin-top:0}
+.outcome-btn{height:auto;min-height:56px;flex-direction:column;gap:2px;font-size:15px}
+.outcome-btn .outcome-sub{font-size:11px;color:var(--muted);font-weight:400}
 </style>
 </head>
 <body>
@@ -261,6 +283,13 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
         <div class="pause-bar-wrap" id="pauseBarWrap">
           <div class="pause-bar-fill" id="pauseBarFill" style="width:0%"></div>
           <div class="pause-bar-label" id="pauseBarLabel">Pause: 0s</div>
+        </div>
+        <div class="check-chips" id="checkChips">
+          <span class="check-chips-label">Rhythm?</span>
+          <button class="check-chip" onclick="setRhythm('VF')">VF</button>
+          <button class="check-chip" onclick="setRhythm('pVT')">pVT</button>
+          <button class="check-chip" onclick="setRhythm('PEA')">PEA</button>
+          <button class="check-chip" onclick="setRhythm('Asystole')">Asys</button>
         </div>
         <button class="btn btn-cyan cpr-main-btn" id="cprBtn" onclick="handleCPR()">
           <span id="cprBtnText">▶ Start CPR</span>
@@ -408,8 +437,11 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
   <div style="flex-shrink:0;padding:8px 16px 12px;background:var(--bg);border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px">
     <button class="btn btn-cyan" onclick="shareLog()" style="width:100%;height:42px;font-size:13px;font-weight:700">📤 Share / Export Log</button>
     <button class="btn" onclick="copyLogAscii()" style="width:100%;height:38px;font-size:12px;font-weight:700;background:var(--surface2);border-color:var(--border);color:var(--muted)">📋 Copy for Haiku (plain text)</button>
+    <button class="btn btn-amber" id="backchartBtn" onclick="openBackchart()" style="display:none;width:100%;height:42px;font-size:13px;font-weight:700">🩺 Review Rhythm Checks</button>
+    <div id="postROSCBanner" style="display:none" class="postrosc-banner">Post-ROSC — code timer still running.<br>Re-arrest? Tap Start CPR on Main.</div>
     <div id="endedBanner" style="display:none" class="ended-banner">Code ended — all timers stopped. Edit or export log above.</div>
-    <button class="btn btn-red" onclick="openInitialRhythmCheck()" style="width:100%;height:54px;font-size:16px;font-weight:700" id="endCodeBtn">⬛ End Code</button>
+    <button class="btn btn-red" onclick="openOutcome()" style="width:100%;height:54px;font-size:16px;font-weight:700" id="endCodeBtn">⬛ End Code</button>
+    <button class="btn btn-amber" onclick="openLockWarn('close')" style="display:none;width:100%;height:54px;font-size:16px;font-weight:700" id="closeCodeBtn">⬛ Close Code</button>
   </div>
 </div>
 
@@ -452,13 +484,58 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
   </div>
 </div>
 
-<!-- END CODE MODAL -->
-<div class="modal-bg" id="endCodeModal" onclick="if(event.target===this)closeEndCode()">
+<!-- END CODE OUTCOME -->
+<div class="modal-bg" id="outcomeModal" onclick="if(event.target===this)closeOutcome()">
   <div class="modal">
-    <h3 style="color:var(--red)">⬛ End Code</h3>
-    <p style="font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6">This will stop all timers and lock the event log. This cannot be undone.<br><br>Copy the log before closing the app.</p>
-    <button class="btn btn-red" onclick="confirmEndCode()" style="width:100%;height:54px;font-size:16px;font-weight:700;margin-bottom:8px">Confirm — End Code</button>
-    <button class="modal-close" onclick="closeEndCode()">Cancel — Continue Code</button>
+    <h3>⬛ End Code — Outcome</h3>
+    <div class="modal-sub">Select outcome</div>
+    <div id="outcomeNote" style="display:none;font-size:12px;color:var(--green);margin-bottom:8px"></div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+      <button class="option-btn outcome-btn" id="outcomeROSCBtn" onclick="selectOutcome(this,'rosc')">💚 ROSC<span class="outcome-sub">Code timer keeps running</span></button>
+      <button class="option-btn outcome-btn" id="outcomeExpiredBtn" onclick="selectOutcome(this,'expired')">Pt expired<span class="outcome-sub">Stops all timers</span></button>
+    </div>
+    <button class="log-btn" onclick="submitOutcome()">Continue</button>
+    <button class="modal-close" onclick="closeOutcome()">Cancel — Continue Code</button>
+  </div>
+</div>
+
+<!-- LOCK WARNING (Pt expired / Close Code) -->
+<div class="modal-bg" id="lockWarnModal" onclick="if(event.target===this)closeLockWarn()">
+  <div class="modal">
+    <h3 style="color:var(--red)" id="lockWarnTitle">End Code</h3>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6">This stops all timers. Timer functions won't be available again until <strong style="color:var(--text)">Reset All</strong>.<br><br>The log stays available to edit and export.</p>
+    <button class="btn btn-red" id="lockWarnConfirmBtn" onclick="confirmLockWarn()" style="width:100%;height:54px;font-size:16px;font-weight:700;margin-bottom:8px">Confirm</button>
+    <button class="modal-close" onclick="closeLockWarn()">Cancel</button>
+  </div>
+</div>
+
+<!-- BACK-CHART OFFER -->
+<div class="modal-bg" id="backchartOfferModal" onclick="if(event.target===this)closeBackchartOffer()">
+  <div class="modal">
+    <h3>🩺 Pulse / Rhythm Checks</h3>
+    <p id="backchartOfferText" style="font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6"></p>
+    <button class="log-btn" onclick="startBackchartFromOffer()">Review Checks</button>
+    <button class="modal-close" onclick="closeBackchartOffer()">Not Now</button>
+  </div>
+</div>
+
+<!-- BACK-CHART / EDIT SWEEP -->
+<div class="modal-bg" id="backchartModal" onclick="if(event.target===this)closeBackchart()">
+  <div class="modal">
+    <h3 id="bcTitle">Check 1 of 1</h3>
+    <div class="bc-info" id="bcInfo"></div>
+    <div class="modal-sub">Rhythm at this check</div>
+    <div class="bc-rhythm-grid" id="bcGrid">
+      <button class="option-btn" data-r="VF" onclick="selectBC('VF')">VF</button>
+      <button class="option-btn" data-r="pVT" onclick="selectBC('pVT')">pVT</button>
+      <button class="option-btn" data-r="PEA" onclick="selectBC('PEA')">PEA</button>
+      <button class="option-btn" data-r="Asystole" onclick="selectBC('Asystole')">Asystole</button>
+    </div>
+    <div class="bc-nav">
+      <button class="modal-close" id="bcBackBtn" onclick="bcStep(-1)">‹ Back</button>
+      <button class="log-btn" id="bcNextBtn" onclick="bcStep(1)">Next ›</button>
+    </div>
+    <button class="modal-close" onclick="closeBackchart()">Close</button>
   </div>
 </div>
 
@@ -487,7 +564,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
   <div class="modal">
     <h3>ROSC — Post-Arrest Rhythm</h3>
     <div class="modal-sub">Select rhythm achieved</div>
-    <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px" id="roscRhythmBtns">
+    <div class="rosc-grid" id="roscRhythmBtns">
       <button class="option-btn" onclick="selectROSCRhythm(this,'Normal Sinus Rhythm')">Normal Sinus Rhythm</button>
       <button class="option-btn" onclick="selectROSCRhythm(this,'Sinus Tachycardia')">Sinus Tachycardia</button>
       <button class="option-btn" onclick="selectROSCRhythm(this,'Sinus Bradycardia')">Sinus Bradycardia</button>
@@ -500,10 +577,12 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
       <button class="option-btn" onclick="selectROSCRhythm(this,'2nd Degree Type II')">2nd Degree Type II</button>
       <button class="option-btn" onclick="selectROSCRhythm(this,'3rd Degree Heart Block')">3rd Degree Heart Block</button>
       <button class="option-btn" onclick="selectROSCRhythm(this,'Ventricular Paced')">Ventricular Paced</button>
-      <button class="option-btn" onclick="selectROSCRhythm(this,'Idioventricular')">Idioventricular</button>
+      <button class="option-btn" style="grid-column:span 2" onclick="selectROSCRhythm(this,'Idioventricular')">Idioventricular</button>
     </div>
-    <button class="log-btn" onclick="submitROSC()">Confirm ROSC</button>
-    <button class="modal-close" onclick="closeROSC()">Cancel</button>
+    <div class="modal-actions">
+      <button class="log-btn" onclick="submitROSC()">Confirm ROSC</button>
+      <button class="modal-close" onclick="closeROSC()">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -667,9 +746,8 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
       <button class="option-btn" onclick="selectInitialRhythmCorrection(this,'PEA')">PEA</button>
       <button class="option-btn" onclick="selectInitialRhythmCorrection(this,'Asystole')">Asystole</button>
     </div>
-    <button class="log-btn" id="initialRhythmCheckConfirmBtn" onclick="submitInitialRhythmCheck()" style="display:none">Confirm &amp; End Code</button>
-    <button class="btn btn-red" id="initialRhythmEndAnywayBtn" onclick="proceedEndCode()" style="width:100%;height:48px;font-size:15px;font-weight:700;margin-bottom:8px;display:none">End Code</button>
-    <button class="modal-close" id="initialRhythmSkipBtn" onclick="proceedEndCode()">Skip — End Code</button>
+    <button class="log-btn" id="initialRhythmCheckConfirmBtn" onclick="submitInitialRhythmCheck()" style="display:none">Confirm</button>
+    <button class="modal-close" id="initialRhythmSkipBtn" onclick="finishInitialRhythmStep()">Skip</button>
   </div>
 </div>
 
@@ -686,9 +764,11 @@ var ecmoSelection=null,airwaySelection=null;
 var initialRhythmLogged=false;
 var deleteEventIndex=null;
 var metronomeOn=false,metroInterval=null,metroDuckTimeout=null;
+var postROSC=false,outcomeSel=null,lockWarnAction=null,afterInitialRhythm=null,roscAfter=null;
+var rhythmSincePause=true,bcList=[],bcPos=0;
 
 function isGWTG(text,tag){
-  if(tag==='code'&&(text.indexOf('Code started')===0||text.indexOf('Code ended')===0))return true;
+  if(tag==='code'&&(text.indexOf('Code started')===0||text.indexOf('Code ended')===0||text.indexOf('Code terminated')===0))return true;
   if(tag==='cpr'&&text.indexOf('CPR started')===0)return true;
   if(tag==='rhythm'&&text.indexOf('[initial]')>0)return true;
   if(tag==='shock')return true;
@@ -715,27 +795,100 @@ function closeClearConfirm(){document.getElementById('clearConfirmModal').classL
 function confirmClear(){events=[];renderLog();renderMiniLog();closeClearConfirm();}
 function openResetConfirm(){document.getElementById('resetConfirmModal').classList.add('open');}
 function closeResetConfirm(){document.getElementById('resetConfirmModal').classList.remove('open');}
-function openEndCode(){document.getElementById('endCodeModal').classList.add('open');}
-function closeEndCode(){document.getElementById('endCodeModal').classList.remove('open');}
-function confirmEndCode(){proceedEndCode();}
-function proceedEndCode(){
-  document.getElementById('initialRhythmCheckModal').classList.remove('open');
-  document.getElementById('endCodeModal').classList.remove('open');
-  codeEnded=true;
+/* ---------- End Code: outcome → (ROSC | Pt expired) ---------- */
+function isResolved(){return codeEnded||postROSC;}
+function roscLoggedSinceLastCPR(){
+  if(cprState!=='idle')return false;
+  var lastRosc=-1,lastStart=-1;
+  events.forEach(function(e,i){
+    if(e.tag==='rosc')lastRosc=i;
+    if(e.tag==='cpr'&&e.text.indexOf('CPR started')===0)lastStart=i;
+  });
+  return lastRosc>-1&&lastRosc>lastStart;
+}
+function openOutcome(){
+  if(!codeActive||codeEnded)return;
+  outcomeSel=null;
+  document.querySelectorAll('#outcomeModal .option-btn').forEach(function(b){b.classList.remove('selected');});
+  var note=document.getElementById('outcomeNote');
+  if(roscLoggedSinceLastCPR()){
+    var r=null;for(var i=events.length-1;i>=0;i--){if(events[i].tag==='rosc'){r=events[i];break;}}
+    note.textContent='ROSC already logged at '+(r?r.elapsed:'—');note.style.display='block';
+    selectOutcome(document.getElementById('outcomeROSCBtn'),'rosc');
+  } else {note.style.display='none';}
+  document.getElementById('outcomeModal').classList.add('open');
+}
+function closeOutcome(){document.getElementById('outcomeModal').classList.remove('open');}
+function selectOutcome(btn,v){outcomeSel=v;document.querySelectorAll('#outcomeModal .option-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');}
+function submitOutcome(){
+  if(!outcomeSel)return;
+  var sel=outcomeSel;closeOutcome();
+  if(sel==='expired'){openLockWarn('expired');return;}
+  if(roscLoggedSinceLastCPR()){afterROSCOutcome();}
+  else{roscAfter=afterROSCOutcome;openROSC();}
+}
+function afterROSCOutcome(){
+  openInitialRhythmCheck(function(){enterPostROSC();offerBackchart();});
+}
+function openLockWarn(action){
+  lockWarnAction=action;
+  document.getElementById('lockWarnTitle').textContent=action==='expired'?'Pt Expired — End Code':'⬛ Close Code';
+  document.getElementById('lockWarnConfirmBtn').textContent=action==='expired'?'Confirm — Pt Expired':'Confirm — Close Code';
+  document.getElementById('lockWarnModal').classList.add('open');
+}
+function closeLockWarn(){document.getElementById('lockWarnModal').classList.remove('open');}
+function confirmLockWarn(){
+  var a=lockWarnAction;lockWarnAction=null;closeLockWarn();
+  if(a==='expired'){
+    openInitialRhythmCheck(function(){
+      addEvent('Code terminated — pt expired','code');
+      finalizeCode();offerBackchart();
+    });
+  } else if(a==='close'){
+    addEvent('Code closed — post-ROSC','code');
+    finalizeCode();
+  }
+}
+function enterPostROSC(){
+  postROSC=true;
+  clearInterval(epiInterval);epiInterval=null;stopMetronome();
+  document.getElementById('epiTile').className='tile tile-epi';
+  document.getElementById('tileEpiSub').textContent='Paused — ROSC';
+  addEvent('Post-ROSC — code timer running','code');
+  document.getElementById('endCodeBtn').style.display='none';
+  document.getElementById('closeCodeBtn').style.display='flex';
+  document.getElementById('postROSCBanner').style.display='block';
+  renderLog();
+}
+function exitPostROSC(){
+  postROSC=false;
+  addEvent('Re-arrest — CPR restarted','code');
+  document.getElementById('endCodeBtn').style.display='flex';
+  document.getElementById('closeCodeBtn').style.display='none';
+  document.getElementById('postROSCBanner').style.display='none';
+  if(epiLastTime){clearInterval(epiInterval);epiInterval=setInterval(tickEpi,1000);tickEpi();}
+  renderLog();
+}
+function finalizeCode(){
+  postROSC=false;codeEnded=true;
   clearInterval(codeInterval);clearInterval(cprInterval);clearInterval(pauseInterval);clearInterval(epiInterval);stopMetronome();
   if(wakeLock){wakeLock.release().catch(function(){});wakeLock=null;}
   addEvent('Code ended — total duration: '+fmt(codeElapsed()),'code');
   document.getElementById('endCodeBtn').style.display='none';
+  document.getElementById('closeCodeBtn').style.display='none';
+  document.getElementById('postROSCBanner').style.display='none';
   document.getElementById('endedBanner').style.display='block';
   document.getElementById('cprBtn').disabled=true;document.getElementById('cprBtn').style.opacity='.4';
+  document.getElementById('checkChips').style.display='none';
   metronomeOn=false;
   var metroBtn=document.getElementById('metroToggleBtn');
   metroBtn.classList.remove('active');metroBtn.disabled=true;metroBtn.style.opacity='.4';
+  renderLog();
   switchTab('log',document.querySelectorAll('.tab')[2]);
 }
 var initialRhythmCorrectionSelected=null;
-function openInitialRhythmCheck(){
-  // Find the initial rhythm event if any
+function openInitialRhythmCheck(next){
+  afterInitialRhythm=next||null;
   var initEvt=null;
   for(var i=0;i<events.length;i++){
     if(events[i].tag==='rhythm'&&events[i].text.indexOf('[initial]')>-1){initEvt=events[i];break;}
@@ -744,27 +897,26 @@ function openInitialRhythmCheck(){
   var body=document.getElementById('initialRhythmCheckBody');
   var picker=document.getElementById('initialRhythmPickerWrap');
   var confirmBtn=document.getElementById('initialRhythmCheckConfirmBtn');
-  var endAnywayBtn=document.getElementById('initialRhythmEndAnywayBtn');
   var skipBtn=document.getElementById('initialRhythmSkipBtn');
   initialRhythmCorrectionSelected=null;
   document.querySelectorAll('#initialRhythmPickerWrap .option-btn').forEach(function(b){b.classList.remove('selected');});
-  picker.style.display='none';confirmBtn.style.display='none';endAnywayBtn.style.display='none';
+  picker.style.display='none';confirmBtn.style.display='none';
   if(initEvt){
-    // Extract rhythm name from "Rhythm: X [initial]"
-    var rhythmName=initEvt.text.replace('Rhythm: ','').replace(' [initial]','');
+    var rhythmName=initEvt.text.replace(/^.*?: /,'').replace(' [initial]','');
     body.innerHTML='<p style="font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.6">The initial rhythm was logged as:<br><strong style="color:var(--text);font-size:16px">'+rhythmName+'</strong><br><br>Was this the true initial rhythm, or has it been updated since arrival?</p><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"><button class="option-btn" onclick="confirmInitialRhythmCorrect()">✓ Yes — this was the initial rhythm</button><button class="option-btn" onclick="showInitialRhythmPicker()">✗ No — correct it</button></div>';
-    skipBtn.textContent='Skip — End Code';
+    skipBtn.textContent='Skip';
   } else {
     body.innerHTML='<p style="font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.6">No initial rhythm was recorded during this code.<br><br>Would you like to add one now?</p><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"><button class="option-btn" onclick="showInitialRhythmPicker()">Add Initial Rhythm</button></div>';
-    endAnywayBtn.style.display='flex';
-    skipBtn.textContent='Skip — End Code Without Rhythm';
+    skipBtn.textContent='Skip — Continue Without Rhythm';
   }
   modal.classList.add('open');
 }
-function confirmInitialRhythmCorrect(){
-  // Nothing to change — proceed to end
-  proceedEndCode();
+function finishInitialRhythmStep(){
+  document.getElementById('initialRhythmCheckModal').classList.remove('open');
+  var n=afterInitialRhythm;afterInitialRhythm=null;
+  if(n)n();
 }
+function confirmInitialRhythmCorrect(){finishInitialRhythmStep();}
 function showInitialRhythmPicker(){
   document.getElementById('initialRhythmPickerWrap').style.display='flex';
   document.getElementById('initialRhythmPickerWrap').style.flexDirection='column';
@@ -779,7 +931,6 @@ function selectInitialRhythmCorrection(btn,r){
 }
 function submitInitialRhythmCheck(){
   if(!initialRhythmCorrectionSelected)return;
-  // Strip [initial] from the original entry and track if one existed
   var hadInitial=false;
   for(var i=0;i<events.length;i++){
     if(events[i].tag==='rhythm'&&events[i].text.indexOf('[initial]')>-1){
@@ -789,19 +940,99 @@ function submitInitialRhythmCheck(){
       break;
     }
   }
-  // Insert corrected/late entry right after "Code started" (position 1), timestamped at code start
   var refEvt=events[0]||{elapsed:'00:00',wall:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})};
   var label=hadInitial?'Initial rhythm corrected: ':'Initial rhythm (late entry): ';
-  var newEvt={
-    elapsed:refEvt.elapsed,
-    wall:refEvt.wall,
-    text:label+initialRhythmCorrectionSelected+' [initial]',
-    tag:'rhythm',
-    gwtg:true
-  };
-  events.splice(1,0,newEvt);
+  events.splice(1,0,{elapsed:refEvt.elapsed,wall:refEvt.wall,text:label+initialRhythmCorrectionSelected+' [initial]',tag:'rhythm',gwtg:true});
   initialRhythmLogged=true;
-  proceedEndCode();
+  renderLog();renderMiniLog();
+  finishInitialRhythmStep();
+}
+
+/* ---------- Pulse/rhythm check windows + back-charting ---------- */
+// A check window runs from each 'CPR paused' to the next 'CPR resumed' (or ROSC).
+function getCheckWindows(){
+  var out=[];
+  for(var i=0;i<events.length;i++){
+    var e=events[i];
+    if(!(e.tag==='cpr'&&e.text==='CPR paused'))continue;
+    var end=events.length,resume=null,rosc=null;
+    for(var j=i+1;j<events.length;j++){
+      var f=events[j];
+      if(f.tag==='rosc'){end=j;rosc=f;break;}
+      if(f.tag==='cpr'&&(f.text.indexOf('CPR resumed')===0||f.text.indexOf('CPR started')===0||f.text==='CPR paused')){end=j;if(f.text.indexOf('CPR resumed')===0)resume=f;break;}
+      if(f.tag==='code'&&(f.text.indexOf('Code ended')===0||f.text.indexOf('Code terminated')===0||f.text.indexOf('Post-ROSC')===0)){end=j;break;}
+    }
+    var rhythm=null,shocks=[];
+    for(var k=i+1;k<end;k++){
+      var g=events[k];
+      if(g.tag==='rhythm'&&!rhythm)rhythm=g;
+      if(g.tag==='shock')shocks.push(g.text);
+    }
+    out.push({pause:e,rhythm:rhythm,shocks:shocks,resume:resume,rosc:rosc});
+  }
+  return out;
+}
+// Checks that ended in ROSC with no rhythm logged are already documented by the ROSC entry.
+function reviewableWindows(){return getCheckWindows().filter(function(w){return !w.rosc||w.rhythm;});}
+function findWindow(pauseObj){var all=getCheckWindows();for(var i=0;i<all.length;i++){if(all[i].pause===pauseObj)return {w:all[i],num:i+1,total:all.length};}return null;}
+function offerBackchart(){
+  var ws=reviewableWindows();if(!ws.length)return;
+  var gaps=ws.filter(function(w){return !w.rhythm;}).length;
+  document.getElementById('backchartOfferText').innerHTML='Would you like to edit any of your pulse and rhythm check entries or back chart them?<br><br><strong style="color:var(--text)">'+ws.length+' check'+(ws.length!==1?'s':'')+'</strong>'+(gaps?' · <span class="bc-missing">'+gaps+' missing a rhythm</span>':' · all have a rhythm');
+  document.getElementById('backchartOfferModal').classList.add('open');
+}
+function closeBackchartOffer(){document.getElementById('backchartOfferModal').classList.remove('open');}
+function startBackchartFromOffer(){closeBackchartOffer();openBackchart();}
+function openBackchart(){
+  bcList=reviewableWindows().map(function(w){return w.pause;});
+  if(!bcList.length)return;
+  bcPos=0;renderBackchart();
+  document.getElementById('backchartModal').classList.add('open');
+}
+function openBackchartSingle(realIdx){
+  var ev=events[realIdx];if(!ev)return;
+  bcList=[ev];bcPos=0;renderBackchart();
+  document.getElementById('backchartModal').classList.add('open');
+}
+function closeBackchart(){document.getElementById('backchartModal').classList.remove('open');bcList=[];renderLog();renderMiniLog();}
+function renderBackchart(){
+  var pauseObj=bcList[bcPos];var f=findWindow(pauseObj);if(!f){closeBackchart();return;}
+  var w=f.w;
+  document.getElementById('bcTitle').textContent=bcList.length>1?('Check '+(bcPos+1)+' of '+bcList.length):('Pulse / Rhythm Check #'+f.num);
+  var pauseLen=w.resume?(w.resume.text.match(/pause (\d+)s/)||[])[1]:null;
+  var lines=['Paused at <strong>'+pauseObj.elapsed+'</strong> <span style="color:var(--muted)">('+pauseObj.wall+')</span>'+(pauseLen?' · '+pauseLen+'s off chest':'')];
+  w.shocks.forEach(function(t){lines.push('<span class="bc-shock">⚡ '+t+' delivered this check</span>');});
+  if(w.rosc)lines.push('<span style="color:var(--green)">Check ended in ROSC</span>');
+  if(w.rhythm){var cur=(w.rhythm.text.match(/^Rhythm: (\S+)/)||[])[1]||'';lines.push('Logged rhythm: <strong>'+cur+'</strong>');}
+  else lines.push('<span class="bc-missing">No rhythm logged</span>');
+  var info=document.getElementById('bcInfo');info.innerHTML=lines.join('<br>');
+  info.className='bc-info'+(w.rhythm?'':' missing');
+  var curR=w.rhythm?(w.rhythm.text.match(/^Rhythm: (\S+)/)||[])[1]:null;
+  document.querySelectorAll('#bcGrid .option-btn').forEach(function(b){b.classList.toggle('selected',b.getAttribute('data-r')===curR);});
+  var back=document.getElementById('bcBackBtn'),next=document.getElementById('bcNextBtn');
+  back.style.visibility=bcPos>0?'visible':'hidden';
+  next.textContent=bcPos<bcList.length-1?'Next ›':'Done';
+}
+// Tapping a rhythm applies it immediately: overwrite the logged one, or insert
+// a late entry right after the pause (i.e. before any shock or CPR resume).
+function selectBC(r){
+  var pauseObj=bcList[bcPos];var f=findWindow(pauseObj);if(!f)return;
+  if(f.w.rhythm){f.w.rhythm.text=f.w.rhythm.text.replace(/^Rhythm: \S+/,'Rhythm: '+r);}
+  else{
+    var idx=events.indexOf(pauseObj);
+    events.splice(idx+1,0,{elapsed:pauseObj.elapsed,wall:pauseObj.wall,text:'Rhythm: '+r+' (late)',tag:'rhythm',gwtg:false});
+  }
+  renderBackchart();
+}
+function bcStep(d){
+  var n=bcPos+d;
+  if(n>=bcList.length){closeBackchart();return;}
+  if(n<0)return;
+  bcPos=n;renderBackchart();
+}
+function updateRhythmChips(){
+  var show=cprState==='paused'&&!rhythmSincePause&&!codeEnded;
+  document.getElementById('checkChips').style.display=show?'flex':'none';
 }
 function toggleMetronome(){
   metronomeOn=!metronomeOn;
@@ -832,7 +1063,7 @@ function startCPRCycle(first){
   cprState='active';cprCheckMode=false;prechargeShown=false;cprCycleStart=now();
   if(metronomeOn&&!metroInterval)startMetronome();
   cprCycleNumber++;
-  if(first){cprRunNumber++;cprRunStart=now();addEvent('CPR started — run #'+cprRunNumber,'cpr');}
+  if(first){if(postROSC)exitPostROSC();cprRunNumber++;cprRunStart=now();addEvent('CPR started — run #'+cprRunNumber,'cpr');}
   else{addEvent('CPR cycle #'+cprCycleNumber+' — run #'+cprRunNumber,'cpr');}
   updateCPRCounterDisplay();
   var ring=document.getElementById('cprRing');
@@ -862,6 +1093,7 @@ function pauseCPR(){
   document.getElementById('pauseBarFill').style.width='0%';document.getElementById('pauseBarFill').style.background='var(--cyan-border)';
   document.getElementById('pauseBarLabel').textContent='Pause: 0s';
   addEvent('CPR paused','cpr');pauseInterval=setInterval(tickPause,250);
+  rhythmSincePause=false;updateRhythmChips();
 }
 function resumeCPR(){
   var ps=Math.floor((now()-cprPauseStart)/1000);
@@ -869,11 +1101,13 @@ function resumeCPR(){
   document.getElementById('pauseBarWrap').style.display='none';
   document.getElementById('checkLabel').style.display='none';
   document.getElementById('cprStatusText').style.display='block';
+  rhythmSincePause=true;updateRhythmChips();
   addEvent('CPR resumed — pause '+ps+'s','cpr');startCPRCycle(false);
 }
 function stopCPRForROSC(){
   clearInterval(cprInterval);clearInterval(pauseInterval);
   cprState='idle';cprCycleStart=null;cprPauseStart=null;cprCheckMode=false;
+  rhythmSincePause=true;updateRhythmChips();
   var runDur=cprRunStart?fmt(Math.floor((now()-cprRunStart)/1000)):'unknown';
   cprCycleNumber=0;
   document.getElementById('cprBtn').className='btn btn-cyan cpr-main-btn';
@@ -970,7 +1204,7 @@ function deliverShock(){
   addEvent('Shock #'+shockCount+' — '+currentJoules+'J','shock');vibrate();
 }
 function openROSC(){document.querySelectorAll('#roscRhythmBtns .option-btn').forEach(function(b){b.classList.remove('selected');});roscRhythm=null;document.getElementById('roscModal').classList.add('open');}
-function closeROSC(){document.getElementById('roscModal').classList.remove('open');}
+function closeROSC(){document.getElementById('roscModal').classList.remove('open');roscAfter=null;}
 function selectROSCRhythm(btn,r){roscRhythm=r;document.querySelectorAll('#roscRhythmBtns .option-btn').forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');}
 function submitROSC(){
   var r=roscRhythm||'rhythm not specified';
@@ -979,11 +1213,13 @@ function submitROSC(){
   document.querySelectorAll('.rhythm-grid .btn').forEach(function(b){b.style.outline='none';});
   document.getElementById('rROSC').style.outline='2px solid var(--green)';
   addEvent('ROSC — '+r+' (CPR run #'+cprRunNumber+', duration: '+runDur+')','rosc');
-  closeROSC();
+  var next=roscAfter;closeROSC();
+  if(next)next();
 }
 function setRhythm(r){
   if(!codeActive||codeEnded)return;
   var first=!initialRhythmLogged;if(first)initialRhythmLogged=true;
+  rhythmSincePause=true;updateRhythmChips();
   document.getElementById('currentRhythm').textContent=r;
   addEvent('Rhythm: '+r+(first?' [initial]':''),'rhythm');
   ['VF','pVT','PEA','Asystole','ROSC'].forEach(function(x){var el=document.getElementById('r'+x);if(el)el.style.outline='none';});
@@ -1116,11 +1352,24 @@ function renderMiniLog(){
 }
 function renderLog(){
   var el=document.getElementById('eventLog');
+  var resolved=isResolved();
+  var ws=reviewableWindows();
+  var gaps=ws.filter(function(w){return !w.rhythm;});
+  var bcBtn=document.getElementById('backchartBtn');
+  if(bcBtn){
+    bcBtn.style.display=(resolved&&ws.length)?'flex':'none';
+    bcBtn.textContent='🩺 Review Rhythm Checks'+(gaps.length?' ('+gaps.length+' missing)':'');
+  }
   var visible=events.filter(function(e){return !isFiltered(e);});
   if(!visible.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No events yet</div>';return;}
+  var gapPauses=gaps.map(function(w){return w.pause;});
   el.innerHTML=visible.map(function(e,i){
-    var deleteBtn=codeEnded?'<button onclick="openDeleteEvent('+i+')" style="background:none;border:none;color:var(--red);font-size:14px;cursor:pointer;padding:0 4px;flex-shrink:0;opacity:.7">✕</button>':'';
-    return '<div class="ev-item'+(e.gwtg?' gwtg-row':'')+'"><span style="color:var(--muted);font-size:13px;flex-shrink:0;margin-right:2px">·</span><span class="ev-el">'+e.elapsed+'</span><span class="ev-wall">'+e.wall+'</span><span class="ev-txt">'+e.text+'</span>'+(e.gwtg?'<span class="ev-gwtg">★</span>':'')+'<span class="ev-tag tag-'+e.tag+'">'+e.tag+'</span>'+deleteBtn+'</div>';
+    var deleteBtn=resolved?'<button onclick="openDeleteEvent('+i+')" style="background:none;border:none;color:var(--red);font-size:14px;cursor:pointer;padding:0 4px;flex-shrink:0;opacity:.7">✕</button>':'';
+    var row='<div class="ev-item'+(e.gwtg?' gwtg-row':'')+'"><span style="color:var(--muted);font-size:13px;flex-shrink:0;margin-right:2px">·</span><span class="ev-el">'+e.elapsed+'</span><span class="ev-wall">'+e.wall+'</span><span class="ev-txt">'+e.text+'</span>'+(e.gwtg?'<span class="ev-gwtg">★</span>':'')+'<span class="ev-tag tag-'+e.tag+'">'+e.tag+'</span>'+deleteBtn+'</div>';
+    if(resolved&&gapPauses.indexOf(e)>-1){
+      row+='<div class="bc-gap-row"><span class="bc-gap-text">No rhythm logged for this check</span><button class="bc-add-btn" onclick="openBackchartSingle('+events.indexOf(e)+')">+ Rhythm</button></div>';
+    }
+    return row;
   }).join('');
   el.scrollTop=el.scrollHeight;
 }
@@ -1256,7 +1505,7 @@ function toneEpiLate(){playSeq([{f:440,d:.15,t:'sawtooth',v:.45,ms:0},{f:440,d:.
 // is a no-op on iOS Safari (Vibration API isn't implemented there), same as
 // the existing shock/epi/pause alerts — degrades silently, visual + audio
 // still work everywhere.
-var TAP_SELECTOR='.btn,.tile,.evt-btn,.med-btn,.option-btn,.j-btn,.tab,.log-btn,.modal-close,.sheet-close,.reset-btn,.start-btn';
+var TAP_SELECTOR='.btn,.tile,.evt-btn,.med-btn,.option-btn,.j-btn,.tab,.log-btn,.modal-close,.sheet-close,.reset-btn,.start-btn,.check-chip,.bc-add-btn';
 function tapTone(){playTone(300,.06,'sine',.3);}
 function tapFX(el){
   try{if(navigator.vibrate)navigator.vibrate(10);}catch(e){}
