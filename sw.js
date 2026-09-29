@@ -1,7 +1,7 @@
-var CACHE='cbn-v1';
+var CACHE='cbn-v2';
 var ASSETS=[
-  '/',
-  '/index.html',
+  './',
+  './index.html',
   'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css',
   'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/fonts/tabler-icons.woff2'
 ];
