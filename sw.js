@@ -1,4 +1,4 @@
-var CACHE='cbn-v2';
+var CACHE='cbn-v5';
 var ASSETS=[
   './',
   './index.html',
