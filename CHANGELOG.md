@@ -3,6 +3,37 @@ UCI Health ALERT
 
 ---
 
+## Version 1.7 — November 2026
+
+### New Features
+- **H's & T's tap-to-log** — new button on Main opens a sheet of the H's and T's
+  - Lists the standard 5 H's and 5 T's plus **Hypoglycemia**, kept on purpose even though the current adult ACLS list may not include it
+  - Tapping a cause logs `Suspected: X` with a timestamp and a new `cause` tag; the button highlights and the sheet stays open so several can be logged
+  - Tap again within 4 seconds to undo; after that, fix it from the log post-code
+  - Only tapped causes appear in the log and export, so an untapped cause never reads as "not considered"
+  - Export summary lists suspected causes with their times
+- **Initial Rhythm panel** — replaces the Rhythm section on Main
+  - Stays up until someone picks a rhythm or taps **Unknown — add later**, so the answer can still come in after the first shock
+  - Before any rhythm or shock is logged, a tap records at the real time as `Rhythm: X [initial]`
+  - After that, a tap goes to the top of the log as `Initial rhythm (late entry): X [initial]`, so later rhythms and shocks stay in order
+  - Tap the same rhythm again within 4 seconds to undo
+- **Initial rhythm in export** — Totals Summary now opens with `Initial rhythm: X` (or `Not recorded`)
+
+### Improvements
+- **ROSC** moved to a permanent button beside H's & T's
+- **Current rhythm** now shows in the CPR card under Run · Cycle
+- **Recent Events** on Main fills the remaining screen and scrolls through the full code, instead of the last 6 entries
+- **End Code check** — if no initial rhythm was recorded, it now asks whether the first logged rhythm was the initial one; Yes tags that entry in place, No adds a late entry at the top
+
+### Bug Fixes
+- **Log tab** — the End Code and Close Code buttons no longer sit partly behind the tab bar until you scroll
+
+### Behavior Changes
+- Pause chips now always log a plain `Rhythm: X`. The first chip no longer gets tagged `[initial]` automatically
+- A rhythm tapped in the panel during a pause doesn't count as that check's rhythm, so the chips and Review Rhythm Checks still ask for it
+
+---
+
 ## Version 1.6 — September 2026
 
 ### New Features
