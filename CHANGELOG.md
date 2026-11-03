@@ -3,6 +3,13 @@ UCI Health ALERT
 
 ---
 
+## Version 1.7.1 — November 2026
+
+### Improvements
+- **Recent Events** on the Main and Events tabs now shows the full wall-clock timestamp next to elapsed time, matching the Log tab
+
+---
+
 ## Version 1.7 — November 2026
 
 ### New Features
