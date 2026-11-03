@@ -59,13 +59,14 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
 .badge-green{background:var(--green);color:#000}
 .badge-yellow{background:var(--yellow);color:#000}
 .badge-amber{background:var(--amber);color:#000}
+.badge-pink{background:var(--pink);color:#000}
 .cpr-section{padding:10px 16px 10px}
 .cpr-center{display:flex;flex-direction:column;align-items:center;gap:8px}
-.cpr-ring-row{display:flex;align-items:center;width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-height:128px;position:relative}
+.cpr-ring-row{display:flex;align-items:center;width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-height:144px;position:relative}
 .metro-toggle{position:absolute;top:6px;right:8px;width:30px;height:30px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}
 .metro-toggle.active{background:var(--cyan-dim);border-color:var(--cyan-border);color:var(--cyan);box-shadow:0 0 8px rgba(0,212,255,.3)}
 .cpr-ring-left{flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:10px 10px 10px 12px}
-.cpr-ring-right{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 14px;gap:4px;border-left:1px solid var(--border)}
+.cpr-ring-right{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:10px 14px;gap:4px;border-left:1px solid var(--border)}
 .check-label{display:none;flex-direction:column}
 .check-label-text{font-size:20px;font-weight:700;color:var(--red);line-height:1.2}
 .precharge-label{display:none;flex-direction:column}
@@ -92,11 +93,34 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
 .tile-shock .tile-label,.tile-shock .tile-icon,.tile-shock .tile-timer{color:var(--yellow)}
 .tile-meds{border-color:var(--orange-border);background:var(--orange-dim)}
 .tile-meds .tile-label,.tile-meds .tile-icon{color:var(--orange)}
-.rhythm-section{padding:6px 16px 10px}
-.cur-rhythm{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:13px;color:var(--muted);margin-bottom:8px}
-.cur-rhythm span{color:var(--text);font-weight:700}
-.rhythm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.rhythm-grid .btn{height:50px;font-size:16px}
+.action-row{display:grid;grid-template-columns:2fr 1fr;gap:8px;padding:10px 16px}
+.action-row .btn{height:52px;font-size:16px}
+.btn-hsts{background:var(--surface2);border-color:var(--muted);color:var(--text)}
+.initial-panel{padding:10px 16px}
+.initial-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.initial-head .sec-label{padding:0}
+.initial-hint{font-size:11px;color:#8aa4bd}
+.initial-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.initial-grid .btn{height:48px;font-size:15px}
+.initial-grid .btn.ir-pending{background:var(--purple-dim);border-color:var(--purple);color:var(--purple)}
+.initial-unknown{width:100%;height:44px;margin-top:8px;font-size:14px;font-weight:600;background:var(--surface2);border-color:var(--muted);color:var(--text)}
+.cur-rhythm{font-size:13px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cur-rhythm span{color:var(--purple);font-weight:700}
+#page-main.active{display:flex;flex-direction:column;min-height:calc(100vh - 143px);min-height:calc(100dvh - 143px)}
+#page-log{height:calc(100vh - 131px);height:calc(100dvh - 131px)}
+#page-main>.section{flex-shrink:0}
+#page-main>.recent-section{flex:1 1 118px;min-height:118px;display:flex;flex-direction:column;border-bottom:none}
+.recent-fill{flex:1;position:relative;margin:0 16px 12px;min-height:78px}
+.recent-fill .mini-log{position:absolute;top:0;left:0;right:0;bottom:0;max-height:none}
+.ht-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ht-col-label{font-size:11px;font-weight:700;color:#8aa4bd;margin-bottom:6px}
+.ht-btn{width:100%;height:58px;margin-bottom:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font-sans);font-weight:600;font-size:13px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 6px;text-align:center;line-height:1.2}
+.ht-btn:active{transform:scale(.96)}
+.ht-btn.on{background:var(--pink-dim);border:2px solid var(--pink);color:var(--pink)}
+.ht-sub{font-size:10px;font-weight:500;color:#ffc2e0}
+.ht-hint{font-size:12px;color:#8aa4bd}
+.ht-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.ht-head h3{margin-bottom:0}
 .evt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 10px}
 .evt-btn{background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--font-sans);cursor:pointer;height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:all .12s;position:relative}
 .evt-btn:active{transform:scale(.96);opacity:.85}
@@ -132,6 +156,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
 .tag-event{background:#0a1a0a;color:#00cc66;border:1px solid #006633}
 .tag-code{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
 .tag-rosc{background:#1a0033;color:#cc88ff;border:1px solid #7733cc}
+.tag-cause{background:var(--pink-dim);color:var(--pink);border:1px solid var(--pink-border)}
 .gwtg-legend{display:flex;align-items:center;gap:6px;padding:6px 16px;font-size:11px;color:var(--gwtg);border-bottom:1px solid var(--border)}
 .gwtg-bar{width:14px;height:14px;border-radius:3px;background:rgba(0,229,255,.1);border:1px solid var(--gwtg);flex-shrink:0}
 .sheet-bg,.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:400;display:none;align-items:flex-end}
@@ -277,6 +302,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
             <div id="cprCounters" style="display:none;margin-top:6px;flex-direction:column;gap:3px">
               <div style="font-size:11px;color:var(--muted)">Run <span id="cprRunDisplay" style="color:var(--cyan);font-weight:700">1</span> &nbsp;·&nbsp; Cycle <span id="cprCycleDisplay" style="color:var(--cyan);font-weight:700">1</span></div>
             </div>
+            <div class="cur-rhythm">Rhythm: <span id="currentRhythm">Not identified</span></div>
           </div>
           <button class="metro-toggle" id="metroToggleBtn" onclick="toggleMetronome()">🎵</button>
         </div>
@@ -325,22 +351,31 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
   </div>
 
   <div class="section">
-    <div class="sec-label">Rhythm</div>
-    <div class="rhythm-section">
-      <div class="cur-rhythm">Most Recent: <span id="currentRhythm">Not identified</span></div>
-      <div class="rhythm-grid">
-        <button class="btn btn-red" onclick="setRhythm('VF')" id="rVF" style="height:50px">VF</button>
-        <button class="btn btn-red" onclick="setRhythm('pVT')" id="rpVT" style="height:50px">pVT</button>
-        <button class="btn" onclick="setRhythm('PEA')" id="rPEA" style="height:50px">PEA</button>
-        <button class="btn" onclick="setRhythm('Asystole')" id="rAsystole" style="height:50px">Asystole</button>
-        <button class="btn btn-green" onclick="openROSC()" id="rROSC" style="height:50px;grid-column:span 2;font-size:16px">💚 ROSC</button>
-      </div>
+    <div class="action-row">
+      <button class="btn btn-green" onclick="openROSC()" id="rROSC">💚 ROSC</button>
+      <button class="btn btn-hsts" onclick="openHsTs()">H's &amp; T's<span class="badge badge-pink" id="htBadge" style="display:none">0</span></button>
     </div>
   </div>
 
-  <div class="section">
+  <div class="section" id="initialPanel">
+    <div class="initial-panel">
+      <div class="initial-head">
+        <div class="sec-label">Initial Rhythm</div>
+        <div class="initial-hint" id="initialHint">Stays until answered</div>
+      </div>
+      <div class="initial-grid">
+        <button class="btn btn-red" data-ir="VF" onclick="tapInitialRhythm('VF')">VF</button>
+        <button class="btn btn-red" data-ir="pVT" onclick="tapInitialRhythm('pVT')">pVT</button>
+        <button class="btn" data-ir="PEA" onclick="tapInitialRhythm('PEA')">PEA</button>
+        <button class="btn" data-ir="Asystole" onclick="tapInitialRhythm('Asystole')" style="font-size:14px">Asystole</button>
+      </div>
+      <button class="btn initial-unknown" onclick="deferInitialRhythm()">Unknown — add later</button>
+    </div>
+  </div>
+
+  <div class="section recent-section">
     <div class="sec-label">Recent Events</div>
-    <div style="padding:0 16px 12px">
+    <div class="recent-fill">
       <div class="mini-log" id="miniLog">
         <div style="padding:14px;text-align:center;color:var(--muted);font-size:12px">No events yet</div>
       </div>
@@ -417,7 +452,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
 </div>
 
 <!-- LOG TAB -->
-<div id="page-log" class="page" style="height:calc(100vh - 112px);display:none;flex-direction:column">
+<div id="page-log" class="page" style="display:none;flex-direction:column">
   <div style="padding:10px 16px 4px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
     <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Event Log</div>
     <div style="display:flex;gap:8px">
@@ -481,6 +516,21 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
       <button class="med-btn" style="background:var(--surface2);border-color:var(--border);color:var(--muted)" onclick="closeMeds();setTimeout(openCustomMed,200)">Custom<span class="med-sub">Free text</span></button>
     </div>
     <button class="sheet-close" onclick="closeMeds()">Close</button>
+  </div>
+</div>
+
+<!-- H'S & T'S SHEET -->
+<div class="sheet-bg" id="hsTsSheet" onclick="if(event.target===this)closeHsTs()">
+  <div class="sheet">
+    <div class="ht-head">
+      <h3>H's &amp; T's</h3>
+      <div class="ht-hint">Tap logs as suspected</div>
+    </div>
+    <div class="ht-grid">
+      <div id="htColH"></div>
+      <div id="htColT"></div>
+    </div>
+    <button class="sheet-close" onclick="closeHsTs()">Close</button>
   </div>
 </div>
 
@@ -761,7 +811,11 @@ var shockCount=0,currentJoules=200;
 var events=[];
 var roscRhythm=null,intubSelection=null,syncRhythm=null,syncJ=null,pacingRhythm=null;
 var ecmoSelection=null,airwaySelection=null;
-var initialRhythmLogged=false;
+var initialRhythmLogged=false,initialDeferred=false,pendingInitial=null;
+var htTaps={};
+var HT_UNDO_MS=4000;
+var HT_H=['Hypovolemia','Hypoxia','Hydrogen ion (acidosis)','Hypo/Hyperkalemia','Hypothermia'];
+var HT_T=['Tension pneumothorax','Tamponade, cardiac','Toxins','Thrombosis, pulmonary','Thrombosis, coronary'];
 var deleteEventIndex=null;
 var metronomeOn=false,metroInterval=null,metroDuckTimeout=null;
 var postROSC=false,outcomeSel=null,lockWarnAction=null,afterInitialRhythm=null,roscAfter=null;
@@ -783,6 +837,7 @@ function codeElapsed(){return codeStart?Math.floor((now()-codeStart)/1000):0;}
 
 function startCode(){
   unlockAudio();
+  renderInitialPanel();
   codeActive=true;codeStart=now();
   document.getElementById('startOverlay').style.display='none';
   document.getElementById('wallTime').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
@@ -792,7 +847,7 @@ function startCode(){
 }
 function openClearConfirm(){document.getElementById('clearConfirmModal').classList.add('open');}
 function closeClearConfirm(){document.getElementById('clearConfirmModal').classList.remove('open');}
-function confirmClear(){events=[];renderLog();renderMiniLog();closeClearConfirm();}
+function confirmClear(){events=[];syncHsTs();renderLog();renderMiniLog();closeClearConfirm();}
 function openResetConfirm(){document.getElementById('resetConfirmModal').classList.add('open');}
 function closeResetConfirm(){document.getElementById('resetConfirmModal').classList.remove('open');}
 /* ---------- End Code: outcome → (ROSC | Pt expired) ---------- */
@@ -808,6 +863,7 @@ function roscLoggedSinceLastCPR(){
 }
 function openOutcome(){
   if(!codeActive||codeEnded)return;
+  commitPendingInitial();
   outcomeSel=null;
   document.querySelectorAll('#outcomeModal .option-btn').forEach(function(b){b.classList.remove('selected');});
   var note=document.getElementById('outcomeNote');
@@ -880,6 +936,7 @@ function finalizeCode(){
   document.getElementById('endedBanner').style.display='block';
   document.getElementById('cprBtn').disabled=true;document.getElementById('cprBtn').style.opacity='.4';
   document.getElementById('checkChips').style.display='none';
+  renderInitialPanel();
   metronomeOn=false;
   var metroBtn=document.getElementById('metroToggleBtn');
   metroBtn.classList.remove('active');metroBtn.disabled=true;metroBtn.style.opacity='.4';
@@ -889,6 +946,7 @@ function finalizeCode(){
 var initialRhythmCorrectionSelected=null;
 function openInitialRhythmCheck(next){
   afterInitialRhythm=next||null;
+  commitPendingInitial();
   var initEvt=null;
   for(var i=0;i<events.length;i++){
     if(events[i].tag==='rhythm'&&events[i].text.indexOf('[initial]')>-1){initEvt=events[i];break;}
@@ -905,18 +963,34 @@ function openInitialRhythmCheck(next){
     var rhythmName=initEvt.text.replace(/^.*?: /,'').replace(' [initial]','');
     body.innerHTML='<p style="font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.6">The initial rhythm was logged as:<br><strong style="color:var(--text);font-size:16px">'+rhythmName+'</strong><br><br>Was this the true initial rhythm, or has it been updated since arrival?</p><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"><button class="option-btn" onclick="confirmInitialRhythmCorrect()">✓ Yes — this was the initial rhythm</button><button class="option-btn" onclick="showInitialRhythmPicker()">✗ No — correct it</button></div>';
     skipBtn.textContent='Skip';
+  } else if(firstRhythmEvent()){
+    var fr=firstRhythmEvent();
+    var frName=(fr.text.match(/^Rhythm: (\S+)/)||[])[1]||'';
+    body.innerHTML='<p style="font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.6">No initial rhythm was recorded.<br><br>First rhythm logged was <strong style="color:var(--text);font-size:16px">'+frName+'</strong> at '+fr.elapsed+'.<br>Was that the initial rhythm?</p><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"><button class="option-btn" onclick="tagFirstRhythmInitial()">✓ Yes — that was the initial rhythm</button><button class="option-btn" onclick="showInitialRhythmPicker()">✗ No — pick the initial rhythm</button></div>';
+    skipBtn.textContent='Skip';
   } else {
     body.innerHTML='<p style="font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.6">No initial rhythm was recorded during this code.<br><br>Would you like to add one now?</p><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"><button class="option-btn" onclick="showInitialRhythmPicker()">Add Initial Rhythm</button></div>';
     skipBtn.textContent='Skip — Continue Without Rhythm';
   }
   modal.classList.add('open');
 }
+function firstRhythmEvent(){
+  for(var i=0;i<events.length;i++){if(events[i].tag==='rhythm'&&events[i].text.indexOf('Rhythm: ')===0)return events[i];}
+  return null;
+}
+function tagFirstRhythmInitial(){
+  var fr=firstRhythmEvent();
+  if(fr){fr.text+=' [initial]';fr.gwtg=true;initialRhythmLogged=true;renderLog();renderMiniLog();}
+  finishInitialRhythmStep();
+}
 function finishInitialRhythmStep(){
   document.getElementById('initialRhythmCheckModal').classList.remove('open');
+  if(!initialRhythmLogged)initialDeferred=true; // End Code has asked; don't put the panel back up
+  renderInitialPanel();
   var n=afterInitialRhythm;afterInitialRhythm=null;
   if(n)n();
 }
-function confirmInitialRhythmCorrect(){finishInitialRhythmStep();}
+function confirmInitialRhythmCorrect(){initialRhythmLogged=true;finishInitialRhythmStep();}
 function showInitialRhythmPicker(){
   document.getElementById('initialRhythmPickerWrap').style.display='flex';
   document.getElementById('initialRhythmPickerWrap').style.flexDirection='column';
@@ -965,7 +1039,7 @@ function getCheckWindows(){
     var rhythm=null,shocks=[];
     for(var k=i+1;k<end;k++){
       var g=events[k];
-      if(g.tag==='rhythm'&&!rhythm)rhythm=g;
+      if(g.tag==='rhythm'&&!g.fromPanel&&!rhythm)rhythm=g;
       if(g.tag==='shock')shocks.push(g.text);
     }
     out.push({pause:e,rhythm:rhythm,shocks:shocks,resume:resume,rosc:rosc});
@@ -1210,20 +1284,118 @@ function submitROSC(){
   var r=roscRhythm||'rhythm not specified';
   var runDur=stopCPRForROSC();
   document.getElementById('currentRhythm').textContent='ROSC — '+r;
-  document.querySelectorAll('.rhythm-grid .btn').forEach(function(b){b.style.outline='none';});
-  document.getElementById('rROSC').style.outline='2px solid var(--green)';
   addEvent('ROSC — '+r+' (CPR run #'+cprRunNumber+', duration: '+runDur+')','rosc');
   var next=roscAfter;closeROSC();
   if(next)next();
 }
 function setRhythm(r){
   if(!codeActive||codeEnded)return;
-  var first=!initialRhythmLogged;if(first)initialRhythmLogged=true;
   rhythmSincePause=true;updateRhythmChips();
   document.getElementById('currentRhythm').textContent=r;
-  addEvent('Rhythm: '+r+(first?' [initial]':''),'rhythm');
-  ['VF','pVT','PEA','Asystole','ROSC'].forEach(function(x){var el=document.getElementById('r'+x);if(el)el.style.outline='none';});
-  var el=document.getElementById('r'+r);if(el)el.style.outline='2px solid var(--purple)';
+  addEvent('Rhythm: '+r,'rhythm');
+}
+/* ---------- Initial rhythm panel ---------- */
+// Stays up until someone picks a rhythm or taps Unknown. Before any rhythm or
+// shock is logged it records at tap time; after that it goes to the top of the
+// log as a late entry, so it can never reorder or replace what was acted on.
+function tapInitialRhythm(r){
+  if(!codeActive||codeEnded||initialRhythmLogged||initialDeferred)return;
+  var same=pendingInitial&&pendingInitial.r===r;
+  if(pendingInitial)undoPendingInitial();
+  if(same){renderInitialPanel();return;}
+  var late=events.some(function(e){return e.tag==='rhythm'||e.tag==='shock'||e.tag==='rosc';});
+  var rhythmEl=document.getElementById('currentRhythm');
+  var ev,prev=rhythmEl.textContent;
+  if(late){
+    var ref=events[0];
+    ev={elapsed:ref.elapsed,wall:ref.wall,text:'Initial rhythm (late entry): '+r+' [initial]',tag:'rhythm',gwtg:true};
+    events.splice(1,0,ev);
+    renderLog();renderMiniLog();
+  } else {
+    addEvent('Rhythm: '+r+' [initial]','rhythm');
+    ev=events[events.length-1];
+    rhythmEl.textContent=r;
+  }
+  ev.fromPanel=true;
+  pendingInitial={r:r,ev:ev,prev:prev,late:late,timer:setTimeout(commitPendingInitial,HT_UNDO_MS)};
+  renderInitialPanel();
+}
+function undoPendingInitial(){
+  if(!pendingInitial)return;
+  clearTimeout(pendingInitial.timer);
+  var i=events.indexOf(pendingInitial.ev);
+  if(i>-1)events.splice(i,1);
+  if(!pendingInitial.late)document.getElementById('currentRhythm').textContent=pendingInitial.prev;
+  pendingInitial=null;
+  renderLog();renderMiniLog();
+}
+function commitPendingInitial(){
+  if(!pendingInitial)return;
+  clearTimeout(pendingInitial.timer);
+  pendingInitial=null;
+  initialRhythmLogged=true;
+  renderInitialPanel();
+}
+function deferInitialRhythm(){
+  if(pendingInitial)undoPendingInitial();
+  initialDeferred=true;
+  renderInitialPanel();
+}
+function renderInitialPanel(){
+  var show=!initialRhythmLogged&&!initialDeferred&&!codeEnded;
+  document.getElementById('initialPanel').style.display=show?'':'none';
+  document.getElementById('initialHint').textContent=pendingInitial?'Tap again to undo':'Stays until answered';
+  document.querySelectorAll('#initialPanel [data-ir]').forEach(function(b){
+    b.classList.toggle('ir-pending',!!pendingInitial&&pendingInitial.r===b.getAttribute('data-ir'));
+  });
+}
+function getInitialRhythmName(){
+  for(var i=0;i<events.length;i++){
+    if(events[i].tag==='rhythm'&&events[i].text.indexOf('[initial]')>-1){
+      return events[i].text.replace(/^.*?: /,'').replace(' [initial]','').replace(' (late)','');
+    }
+  }
+  return null;
+}
+/* ---------- H's and T's ---------- */
+function openHsTs(){renderHsTs();document.getElementById('hsTsSheet').classList.add('open');}
+function closeHsTs(){document.getElementById('hsTsSheet').classList.remove('open');}
+function htButton(name){
+  var t=htTaps[name];
+  var safe=name.replace(/'/g,"\\'");
+  var sub=t?'<span class="ht-sub">'+(t.timer?'Tap again to undo':'Suspected '+t.ev.elapsed)+'</span>':'';
+  return '<button class="ht-btn'+(t?' on':'')+'" onclick="tapHsTs(\''+safe+'\')">'+name+sub+'</button>';
+}
+function renderHsTs(){
+  document.getElementById('htColH').innerHTML='<div class="ht-col-label">H\'s</div>'+HT_H.map(htButton).join('');
+  document.getElementById('htColT').innerHTML='<div class="ht-col-label">T\'s</div>'+HT_T.map(htButton).join('');
+  var n=Object.keys(htTaps).length;
+  var b=document.getElementById('htBadge');
+  b.textContent=n;b.style.display=n>0?'flex':'none';
+}
+function tapHsTs(name){
+  if(!codeActive||codeEnded)return;
+  var t=htTaps[name];
+  if(t){
+    if(!t.timer)return; // locked in: fix it from the log post-code
+    clearTimeout(t.timer);
+    var i=events.indexOf(t.ev);
+    if(i>-1)events.splice(i,1);
+    delete htTaps[name];
+    renderLog();renderMiniLog();renderHsTs();
+    return;
+  }
+  addEvent('Suspected: '+name,'cause');
+  var rec={ev:events[events.length-1],timer:null};
+  rec.timer=setTimeout(function(){rec.timer=null;renderHsTs();},HT_UNDO_MS);
+  htTaps[name]=rec;
+  renderHsTs();
+}
+function syncHsTs(){
+  Object.keys(htTaps).forEach(function(n){
+    if(events.indexOf(htTaps[n].ev)<0){clearTimeout(htTaps[n].timer);delete htTaps[n];}
+  });
+  renderHsTs();
 }
 function openJoules(){document.getElementById('joulesModal').classList.add('open');}
 function closeJoules(){document.getElementById('joulesModal').classList.remove('open');}
@@ -1272,6 +1444,7 @@ function confirmDeleteEvent(){
   renderLog();renderMiniLog();
 }
 function recalculateCounts(){
+  syncHsTs();
   var sc=0;
   events.forEach(function(e){
     if(e.tag==='shock'){sc++;e.text=e.text.replace(/Shock #\d+/,'Shock #'+sc);}
@@ -1345,7 +1518,7 @@ function addEvent(text,tag){
 }
 function renderMiniLog(){
   var visible=events.filter(function(e){return !isFiltered(e);});
-  var html=visible.length?visible.slice(-6).reverse().map(function(e){
+  var html=visible.length?visible.slice().reverse().map(function(e){
     return '<div class="mini-item'+(e.gwtg?' gwtg-row':'')+'"><span style="color:var(--muted);font-size:12px;flex-shrink:0">·</span><span class="mini-el">'+e.elapsed+'</span><span class="mini-txt">'+e.text+'</span><span class="mini-tag tag-'+e.tag+'">'+e.tag+'</span></div>';
   }).join(''):'<div style="padding:12px;text-align:center;color:var(--muted);font-size:12px">No events yet</div>';
   ['miniLog','miniLogEvents'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML=html;});
@@ -1390,14 +1563,17 @@ function buildLogText(){
   // Build summary totals
   var medCounts={};
   var interventions=[];
+  var causes=[];
   events.filter(function(e){return !isFiltered(e);}).forEach(function(e){
     if(e.tag==='med'){
       var key=e.text.replace(/ — dose #\d+/,'');
       medCounts[key]=(medCounts[key]||0)+1;
     }
     if(e.tag==='event'){interventions.push(e.text);}
+    if(e.tag==='cause'){causes.push(e.text.replace('Suspected: ','')+' ('+e.elapsed+')');}
   });
   var summaryLines=['TOTALS SUMMARY',div];
+  summaryLines.push('Initial rhythm: '+(getInitialRhythmName()||'Not recorded'));
   summaryLines.push('Shocks:        '+shockCount);
   summaryLines.push('Epinephrine:   '+epiDoses+' dose'+(epiDoses!==1?'s':''));
   summaryLines.push('CPR Runs:      '+cprRunNumber);
@@ -1408,6 +1584,11 @@ function buildLogText(){
     summaryLines.push('');
     summaryLines.push('Interventions:');
     interventions.forEach(function(i){summaryLines.push('  · '+i);});
+  }
+  if(causes.length){
+    summaryLines.push('');
+    summaryLines.push('Suspected causes:');
+    causes.forEach(function(c){summaryLines.push('  · '+c);});
   }
   var lines=[
     'CODE BLUE NAVI — EVENT LOG',
@@ -1461,7 +1642,7 @@ function switchTab(name,el){
   document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
   var page=document.getElementById('page-'+name);
   page.classList.add('active');
-  page.style.display=(name==='log')?'flex':'block';
+  page.style.display=(name==='events')?'block':'flex';
   el.classList.add('active');
 }
 function vibrate(pattern){if(navigator.vibrate)navigator.vibrate(pattern||[200,100,200]);}
@@ -1505,7 +1686,7 @@ function toneEpiLate(){playSeq([{f:440,d:.15,t:'sawtooth',v:.45,ms:0},{f:440,d:.
 // is a no-op on iOS Safari (Vibration API isn't implemented there), same as
 // the existing shock/epi/pause alerts — degrades silently, visual + audio
 // still work everywhere.
-var TAP_SELECTOR='.btn,.tile,.evt-btn,.med-btn,.option-btn,.j-btn,.tab,.log-btn,.modal-close,.sheet-close,.reset-btn,.start-btn,.check-chip,.bc-add-btn';
+var TAP_SELECTOR='.btn,.tile,.evt-btn,.med-btn,.option-btn,.j-btn,.tab,.log-btn,.modal-close,.sheet-close,.reset-btn,.start-btn,.check-chip,.bc-add-btn,.ht-btn';
 function tapTone(){playTone(300,.06,'sine',.3);}
 function tapFX(el){
   try{if(navigator.vibrate)navigator.vibrate(10);}catch(e){}
