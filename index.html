@@ -136,6 +136,7 @@ body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-hei
 .mini-item{padding:5px 10px;border-bottom:1px solid var(--border);display:flex;gap:6px;align-items:center}
 .mini-item:last-child{border-bottom:none}
 .mini-el{color:var(--cyan);font-variant-numeric:tabular-nums;font-size:10px;min-width:34px;white-space:nowrap;flex-shrink:0}
+.mini-wall{color:var(--muted);font-size:10px;white-space:nowrap;flex-shrink:0}
 .mini-txt{color:var(--text);flex:1;font-size:12px}
 .mini-tag{font-size:9px;padding:1px 5px;border-radius:4px;white-space:nowrap;flex-shrink:0}
 .mini-item.gwtg-row{background:rgba(0,229,255,.04);border-left:2px solid var(--gwtg)}
@@ -1519,7 +1520,7 @@ function addEvent(text,tag){
 function renderMiniLog(){
   var visible=events.filter(function(e){return !isFiltered(e);});
   var html=visible.length?visible.slice().reverse().map(function(e){
-    return '<div class="mini-item'+(e.gwtg?' gwtg-row':'')+'"><span style="color:var(--muted);font-size:12px;flex-shrink:0">·</span><span class="mini-el">'+e.elapsed+'</span><span class="mini-txt">'+e.text+'</span><span class="mini-tag tag-'+e.tag+'">'+e.tag+'</span></div>';
+    return '<div class="mini-item'+(e.gwtg?' gwtg-row':'')+'"><span style="color:var(--muted);font-size:12px;flex-shrink:0">·</span><span class="mini-el">'+e.elapsed+'</span><span class="mini-wall">'+e.wall+'</span><span class="mini-txt">'+e.text+'</span><span class="mini-tag tag-'+e.tag+'">'+e.tag+'</span></div>';
   }).join(''):'<div style="padding:12px;text-align:center;color:var(--muted);font-size:12px">No events yet</div>';
   ['miniLog','miniLogEvents'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML=html;});
 }
